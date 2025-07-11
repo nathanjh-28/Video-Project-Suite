@@ -5,7 +5,7 @@ namespace Video_Project_Suite.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HelloWorld : ControllerBase
+    public class HelloWorldController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get()
