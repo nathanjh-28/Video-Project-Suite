@@ -52,3 +52,14 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Visual Studio Code
+.vscode/
+
+# Notes
+current-tasks.md
+
+# Sqlite
+*.db
+*.sqlite
+*.sqlite3
