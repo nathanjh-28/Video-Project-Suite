@@ -17,6 +17,8 @@ public interface IAuthService
     Task<TokenResponseDto?> LoginAsync(UserDto request);
 
     Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
+    Task<User?> AlterUserRoleAsync(AlterUserRoleDto request);
+
 
     // change password
 

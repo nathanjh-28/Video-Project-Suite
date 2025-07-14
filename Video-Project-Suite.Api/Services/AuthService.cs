@@ -174,4 +174,17 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         };
         return response;
     }
+
+    public async Task<User?> AlterUserRoleAsync(AlterUserRoleDto request)
+    {
+        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+        user.Role = request.NewRole;
+        context.User.Update(user);
+        await context.SaveChangesAsync();
+        return user; // User role altered successfully
+    }
 }

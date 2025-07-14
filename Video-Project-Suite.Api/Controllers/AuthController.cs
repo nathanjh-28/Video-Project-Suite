@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Video_Project_Suite.Api.Models;
@@ -37,12 +38,25 @@ namespace Video_Project_Suite.Api.Controllers
         }
 
         // Logout an existing user
+        // could implement a blackout list of tokens
 
         // Change Password Route
 
         // Forgot Password Route
 
         // alter user role
+        [Authorize(Roles = "Admin")]
+        [HttpPost("alter-user-role")]
+        public async Task<ActionResult> AlterUserRole(AlterUserRoleDto request)
+        {
+            // Implement alter user role logic here
+            var result = await authService.AlterUserRoleAsync(request);
+            if (result == null)
+            {
+                return BadRequest("Failed to alter user role.");
+            }
+            return Ok();
+        }
 
         // Refresh Tokens Route
         [HttpPost("refresh-token")]
