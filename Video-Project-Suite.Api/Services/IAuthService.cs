@@ -21,6 +21,7 @@ public interface IAuthService
 
 
     // change password
+    Task<User?> ChangePasswordAsync(ChangePasswordDto request);
 
     // forgot password
 

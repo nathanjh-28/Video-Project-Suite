@@ -187,4 +187,23 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         await context.SaveChangesAsync();
         return user; // User role altered successfully
     }
+
+    public async Task<User?> ChangePasswordAsync(ChangePasswordDto request)
+    {
+        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+
+        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.OldPassword)
+            == PasswordVerificationResult.Failed)
+        {
+            return null; // Invalid password
+        }
+        user.PasswordHash = new PasswordHasher<User>().HashPassword(user, request.NewPassword);
+        context.User.Update(user);
+        await context.SaveChangesAsync();
+        return user;
+    }
 }

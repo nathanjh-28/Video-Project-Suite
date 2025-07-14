@@ -41,6 +41,17 @@ namespace Video_Project_Suite.Api.Controllers
         // could implement a blackout list of tokens
 
         // Change Password Route
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<ActionResult> ChangePassword(ChangePasswordDto request)
+        {
+            var result = await authService.ChangePasswordAsync(request);
+            if (result == null)
+            {
+                return BadRequest("Failed to change password.");
+            }
+            return Ok();
+        }
 
         // Forgot Password Route
 
