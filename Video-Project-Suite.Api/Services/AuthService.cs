@@ -15,7 +15,7 @@ namespace Video_Project_Suite.Api.Services;
 // AuthService.cs
 //
 // This file implements the IAuthService interface, providing methods for user authentication operations.
-// It contains the AuthService class which implements methods for user registration, login, and token refresh.
+// It contains the AuthService class which implements methods for user registration, login, token refresh, and user role alteration.
 // The AuthService class uses the IAuthService interface to define the methods for user authentication.
 
 public class AuthService(AppDbContext context, IConfiguration configuration) : IAuthService
@@ -35,6 +35,11 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         if (user == null)
         {
             return null; // User not found
+        }
+
+        if (string.IsNullOrEmpty(request.Password))
+        {
+            return null; // Invalid password
         }
 
         if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password)
@@ -91,6 +96,42 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         return await CreateTokenResponse(user);
     }
 
+    // Alter User Role
+
+    // This method is used to alter the role of a user, only accessible by Admins.
+    public async Task<User?> AlterUserRoleAsync(AlterUserRoleDto request)
+    {
+        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+        user.Role = request.NewRole;
+        context.User.Update(user);
+        await context.SaveChangesAsync();
+        return user; // User role altered successfully
+    }
+
+    // Change Password
+    public async Task<User?> ChangePasswordAsync(ChangePasswordDto request)
+    {
+        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+
+        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.OldPassword)
+            == PasswordVerificationResult.Failed)
+        {
+            return null; // Invalid password
+        }
+        user.PasswordHash = new PasswordHasher<User>().HashPassword(user, request.NewPassword);
+        context.User.Update(user);
+        await context.SaveChangesAsync();
+        return user;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     //
     // Helper methods
@@ -109,13 +150,13 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
         var tokenDescriptor = new JwtSecurityToken(
-            issuer: configuration.GetValue<string>("AppSettings:Issuer"),
-            audience: configuration.GetValue<string>("AppSettings:Audience"),
+            issuer: configuration["AppSettings:Issuer"],
+            audience: configuration["AppSettings:Audience"],
             claims: claims,
             expires: DateTime.Now.AddDays(1),
             signingCredentials: creds
@@ -161,6 +202,8 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     }
 
     // Create Token Response
+
+    // This method creates a token response containing the access token and refresh token.
     private async Task<TokenResponseDto> CreateTokenResponse(User? user)
     {
         if (user == null)
@@ -175,35 +218,4 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         return response;
     }
 
-    public async Task<User?> AlterUserRoleAsync(AlterUserRoleDto request)
-    {
-        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
-        if (user == null)
-        {
-            return null; // User not found
-        }
-        user.Role = request.NewRole;
-        context.User.Update(user);
-        await context.SaveChangesAsync();
-        return user; // User role altered successfully
-    }
-
-    public async Task<User?> ChangePasswordAsync(ChangePasswordDto request)
-    {
-        var user = await context.User.FirstOrDefaultAsync(u => u.Username == request.Username);
-        if (user == null)
-        {
-            return null; // User not found
-        }
-
-        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.OldPassword)
-            == PasswordVerificationResult.Failed)
-        {
-            return null; // Invalid password
-        }
-        user.PasswordHash = new PasswordHasher<User>().HashPassword(user, request.NewPassword);
-        context.User.Update(user);
-        await context.SaveChangesAsync();
-        return user;
-    }
 }
