@@ -63,3 +63,5 @@ current-tasks.md
 *.db
 *.sqlite
 *.sqlite3
+
+*.sql
