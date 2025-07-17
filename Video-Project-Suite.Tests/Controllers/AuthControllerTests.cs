@@ -1,3 +1,5 @@
+// AuthControllerTests.cs
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -73,6 +75,112 @@ namespace Video_Project_Suite.Tests.Controllers
         {
             _client.Dispose();
         }
+
+        /* Testing is not working yet for this file.
+
+        #region RegisterAsync Tests
+
+        [Fact]
+        public async Task Register_ValidUser_ReturnsOkWithUser()
+        {
+            // Arrange:
+            // - Create a RegisterUserDto with valid data (username, password, email)
+            var request = new RegisterUserDto
+            {
+                Username = "testuser",
+                Email = "testuser@email.com",
+                Password = "StrongPassword123",
+                FirstName = "Test",
+                LastName = "User"
+            };
+            // - Serialize it to JSON content
+            var content = CreateJsonContent(request);
+
+            // Act:
+            // - POST to /api/auth/register with the JSON content
+            var response = await _client.PostAsync($"{_baseUrl}/register", content);
+            // - Get the response
+            var result = await DeserializeResponse<User>(response);
+
+            // Assert:
+            // - Response status code should be 200 OK
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            // - Response should contain a User object
+            Assert.NotNull(result);
+            // - User object should have matching username and email
+            Assert.Equal(request.Username, result.Username);
+            Assert.Equal(request.Email, result.Email);
+            // - User object should not contain password
+            Assert.Null(result.PasswordHash);
+            // - User object should have FirstName and LastName set
+            Assert.Equal(request.FirstName, result.FirstName);
+            Assert.Equal(request.LastName, result.LastName);
+
+        }
+
+        [Fact]
+        public async Task Register_InvalidUser_ReturnsBadRequest()
+        {
+            // Not implemented yet
+
+
+            // Arrange:
+            // - Create a RegisterUserDto with invalid data (empty username, weak password, invalid email)
+            // - Serialize it to JSON content
+
+            // Act:
+            // - POST to /api/auth/register with the invalid JSON content
+            // - Get the response
+
+            // Assert:
+            // - Response status code should be 400 Bad Request
+            // - Response should contain error message
+        }
+
+        [Fact]
+        public async Task Register_DuplicateUser_ReturnsBadRequest()
+        {
+            // Arrange:
+            // - Create a RegisterUserDto with valid data
+            // - Register the user once (should succeed)
+            // - Try to register the same user again
+
+            // Act:
+            // - POST to /api/auth/register with the same user data twice
+            // - Get the second response
+
+            // Assert:
+            // - First registration should return 200 OK
+            // - Second registration should return 400 Bad Request
+            // - Second response should contain appropriate error message
+        }
+
+        #endregion
+
+        */
+        #region LoginAsync Tests
+
+        // tests
+
+        #endregion
+
+        #region ChangePassword Tests
+
+        // tests
+
+        #endregion
+
+        #region AlterUserRoleAsync Tests
+
+        // tests
+
+        #endregion
+
+        #region RefreshTokensAsync Tests
+
+        // tests
+
+        #endregion
 
     }
 

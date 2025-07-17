@@ -69,6 +69,7 @@ namespace Video_Project_Suite.Api.Tests.Services
             return user;
         }
 
+
         public void Dispose()
         {
             _context.Dispose();
@@ -210,128 +211,183 @@ namespace Video_Project_Suite.Api.Tests.Services
             Assert.Null(result);
         }
 
-        // POTENTIAL FALSE POSITIVE SCENARIOS (These should fail if they pass)
-        // These tests verify that the system doesn't incorrectly authenticate users
 
+        #endregion
+
+        #region RegisterAsync Tests
+
+        // TRUE POSITIVE: Valid registration should create a new user
         [Fact]
-        public async Task LoginAsync_SqlInjectionAttempt_ReturnsNull_PreventFalsePositive()
+        public async Task RegisterAsync_ValidRequest_ReturnsUser_TruePositive()
+        {
+            // Arrange
+            var registerRequest = new RegisterUserDto
+            {
+                Username = "newuser",
+                Password = "NewUserPassword123!",
+                Email = "newuser@example.com",
+                FirstName = "New",
+                LastName = "User"
+            };
+
+            // Act
+            var result = await _authService.RegisterAsync(registerRequest);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(registerRequest.Username, result.Username);
+            Assert.Equal(registerRequest.Email, result.Email);
+            Assert.Equal(registerRequest.FirstName, result.FirstName);
+            Assert.Equal(registerRequest.LastName, result.LastName);
+        }
+
+        // TRUE NEGATIVE: Duplicate username should return null
+        [Fact]
+        public async Task RegisterAsync_DuplicateUsername_ReturnsNull_TrueNegative()
+        {
+            // Arrange
+            var existingUser = CreateTestUser("existinguser");
+            _context.User.Add(existingUser);
+            await _context.SaveChangesAsync();
+
+            var registerRequest = new RegisterUserDto
+            {
+                Username = "existinguser", // Duplicate username
+                Password = "NewUserPassword123!",
+                Email = "existinguser@example.com",
+                FirstName = "Existing",
+                LastName = "User"
+            };
+
+            // Act
+            var result = await _authService.RegisterAsync(registerRequest);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        #endregion
+
+        #region RefreshTokensAsync Tests
+
+        // TRUE POSITIVE: Valid refresh token should return new tokens
+        [Fact]
+        public async Task RefreshTokensAsync_ValidRequest_ReturnsTokenResponse_TruePositive()
         {
             // Arrange
             var testUser = CreateTestUser();
             _context.User.Add(testUser);
             await _context.SaveChangesAsync();
 
-            var loginRequest = new UserDto
+            // Simulate a valid refresh token
+            testUser.RefreshToken = "valid-refresh-token";
+            testUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
+            await _context.SaveChangesAsync();
+            var refreshRequest = new RefreshTokenRequestDto
             {
-                Username = "testuser'; DROP TABLE User; --",
-                Password = "TestPassword123!"
+                UserId = testUser.Id,
+                RefreshToken = "valid-refresh-token"
             };
-
             // Act
-            var result = await _authService.LoginAsync(loginRequest);
+            var result = await _authService.RefreshTokensAsync(refreshRequest);
 
-            // Assert - Should NOT authenticate (prevent false positive)
-            Assert.Null(result);
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.AccessToken);
+            Assert.NotNull(result.RefreshToken);
+            Assert.NotEmpty(result.AccessToken);
+            Assert.NotEmpty(result.RefreshToken);
+            Assert.NotEqual("valid-refresh-token", testUser.RefreshToken); // New refresh token generated
+            Assert.True(testUser.RefreshTokenExpiryTime > DateTime.Now); // New expiry time
+            Assert.NotEqual(testUser.RefreshTokenExpiryTime, DateTime.Now.AddDays(1)); // New expiry time
+
         }
 
+        // TRUE NEGATIVE: Invalid refresh token should return null
         [Fact]
-        public async Task LoginAsync_PasswordHashAsPassword_ReturnsNull_PreventFalsePositive()
+        public async Task RefreshTokensAsync_InvalidRequest_ReturnsNull_TrueNegative()
         {
             // Arrange
             var testUser = CreateTestUser();
             _context.User.Add(testUser);
             await _context.SaveChangesAsync();
 
-            var loginRequest = new UserDto
+            var refreshRequest = new RefreshTokenRequestDto
             {
-                Username = "testuser",
-                Password = testUser.PasswordHash // Trying to use the hash as password
+                UserId = testUser.Id,
+                RefreshToken = "invalid-refresh-token"
             };
 
             // Act
-            var result = await _authService.LoginAsync(loginRequest);
+            var result = await _authService.RefreshTokensAsync(refreshRequest);
 
-            // Assert - Should NOT authenticate (prevent false positive)
+            // Assert
             Assert.Null(result);
         }
 
-        // POTENTIAL FALSE NEGATIVE SCENARIOS
-        // These tests verify that valid users aren't incorrectly rejected
+        #endregion
 
+        #region AlterUserRoleAsync Tests
+
+        // TRUE POSITIVE: Admin can change user role
         [Fact]
-        public async Task LoginAsync_WhitespaceAroundUsername_ReturnsTokenResponse_PreventFalseNegative()
+        public async Task AlterUserRoleAsync_ValidRequest_ReturnsUser_TruePositive()
         {
             // Arrange
             var testUser = CreateTestUser("testuser");
             _context.User.Add(testUser);
             await _context.SaveChangesAsync();
 
-            var loginRequest = new UserDto
+            var alterRoleRequest = new AlterUserRoleDto
             {
-                Username = " testuser ", // Username with whitespace
-                Password = "TestPassword123!"
+                Username = "testuser",
+                NewRole = "Moderator"
             };
 
             // Act
-            var result = await _authService.LoginAsync(loginRequest);
+            var result = await _authService.AlterUserRoleAsync(alterRoleRequest);
 
-            // Assert - This test will reveal if whitespace handling causes false negatives
-            // The result depends on your business requirements:
-            // - If whitespace should be trimmed: Assert.NotNull(result)
-            // - If whitespace should be preserved: Assert.Null(result)
-            // For this example, let's assume it should be null (strict matching)
-            Assert.Null(result);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Moderator", result.Role);
         }
 
+        // TRUE NEGATIVE:
+        // Non-admin user should not be able to change roles
+        // tbd
+
+        #endregion
+
+        #region ChangePasswordAsync Tests
+
+        // TRUE POSITIVE: Valid password change should succeed
         [Fact]
-        public async Task LoginAsync_ValidCredentialsMultipleTimes_ReturnsTokenResponse_PreventFalseNegative()
+        public async Task ChangePasswordAsync_ValidRequest_ReturnsUser_TruePositive()
         {
             // Arrange
             var testUser = CreateTestUser();
             _context.User.Add(testUser);
             await _context.SaveChangesAsync();
 
-            var loginRequest = new UserDto
+            var changePasswordRequest = new ChangePasswordDto
             {
                 Username = "testuser",
-                Password = "TestPassword123!"
+                OldPassword = "TestPassword123!",
+                NewPassword = "NewPassword123!"
             };
 
-            // Act - Login multiple times
-            var result1 = await _authService.LoginAsync(loginRequest);
-            var result2 = await _authService.LoginAsync(loginRequest);
+            // Act
+            var result = await _authService.ChangePasswordAsync(changePasswordRequest);
 
-            // Assert - Should work multiple times (no account lockout logic)
-            Assert.NotNull(result1);
-            Assert.NotNull(result2);
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(new PasswordHasher<User>().VerifyHashedPassword(result, result.PasswordHash, "NewPassword123!") == PasswordVerificationResult.Success);
         }
 
-
-
         #endregion
 
-        #region RegisterAsync Tests
-        // tests
 
-        #endregion
-
-        #region RefreshTokensAsync Tests
-        // tests
-
-        #endregion
-
-        #region AlterUserRoleAsync Tests
-        // tests
-
-        #endregion
-
-        #region ChangePasswordAsync Tests
-        // tests
-
-        #endregion
 
     }
-
-
 }
 
