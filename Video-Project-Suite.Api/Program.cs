@@ -1,9 +1,14 @@
-
 using Scalar.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+
 using Video_Project_Suite.Api.Services;
 using Video_Project_Suite.Api.Data;
 
@@ -26,31 +31,30 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-
         builder.Services.AddControllers();
 
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        // For .NET 8, use AddEndpointsApiExplorer instead of AddOpenApi
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        // builder.Services.AddOpenApi();
 
         // SQLite database for storing user data
         builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
 
         // Add authentication Services
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
-    {
-
-        Options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-            ValidateAudience = true,
-            ValidAudience = builder.Configuration["AppSettings:Audience"],
-            ValidateLifetime = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
-            ValidateIssuerSigningKey = true
-        };
-    });
-
+            Options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = builder.Configuration["AppSettings:Audience"],
+                ValidateLifetime = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+                ValidateIssuerSigningKey = true
+            };
+        });
 
         // Add Auth Service
         builder.Services.AddScoped<IAuthService, AuthService>();
@@ -61,8 +65,13 @@ public class Program
         // Configure the HTTP request pipeline for development.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
-            app.MapScalarApiReference(); // Map the Scalar API reference
+            // https://guides.scalar.com/scalar/scalar-api-references/integrations/net-aspnet-core
+
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = "/openapi/{documentName}.json";
+            });
+            app.MapScalarApiReference();
 
         }
 
