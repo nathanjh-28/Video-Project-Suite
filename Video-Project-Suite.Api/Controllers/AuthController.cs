@@ -23,6 +23,8 @@ namespace Video_Project_Suite.Api.Controllers
             {
                 return BadRequest("Registration failed.");
             }
+
+            // we should return a dto instead of user but for now we return the user
             return Ok(user);
         }
 
