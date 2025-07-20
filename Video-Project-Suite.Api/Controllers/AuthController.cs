@@ -23,12 +23,14 @@ namespace Video_Project_Suite.Api.Controllers
             {
                 return BadRequest("Registration failed.");
             }
+
+            // we should return a dto instead of user but for now we return the user
             return Ok(user);
         }
 
         // Login an existing user
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
         {
             var result = await authService.LoginAsync(request);
             if (result == null)
