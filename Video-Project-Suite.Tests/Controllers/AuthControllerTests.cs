@@ -58,6 +58,7 @@ namespace Video_Project_Suite.Tests.Controllers
             _client?.Dispose();
         }
 
+        #region RegisterAsync Tests
         [Fact]
         public async Task Register_ValidUser_ReturnsOkWithUser()
         {
@@ -101,109 +102,184 @@ namespace Video_Project_Suite.Tests.Controllers
                 Assert.Fail($"Expected success but got {response.StatusCode}: {responseContent}");
             }
         }
-        /*
-        #region RegisterAsync Tests
+
 
         [Fact]
-        public async Task Register_ValidUser_ReturnsOkWithUser()
+        public async Task Register_DuplicateUser_ReturnsError()
         {
-            // Arrange:
-            // - Create a RegisterUserDto with valid data (username, password, email)
+            // Arrange - Use same unique data for both requests
+            var uniqueId = Guid.NewGuid().ToString("N")[..8];
             var request = new RegisterUserDto
             {
-                Username = "testuser",
-                Email = "testuser@email.com",
+                Username = $"duplicate_{uniqueId}",
+                Email = $"duplicate_{uniqueId}@email.com",
                 Password = "StrongPassword123",
                 FirstName = "Test",
                 LastName = "User"
             };
-            // - Serialize it to JSON content
             var content = CreateJsonContent(request);
 
-            // Act:
-            // - POST to /api/auth/register with the JSON content
-            var response = await _client.PostAsync($"{_baseUrl}/register", content);
-            // - Get the response
-            var result = await DeserializeResponse<User>(response);
+            // Act - Register first time (should succeed)
+            var firstResponse = await _client.PostAsync($"{_baseUrl}/register", content);
 
-            // Assert:
-            // - Response status code should be 200 OK
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            // - Response should contain the created user with non-null ID
-            Assert.NotNull(result);
-            // - User properties should match the request
-            Assert.Equal(request.Username, result.Username);
-            Assert.Equal(request.Email, result.Email);
-            Assert.Equal(request.FirstName, result.FirstName);
-            Assert.Equal(request.LastName, result.LastName);
-            // - Password should not be returned in the response
-            // Assert.Null(result.PasswordHash);
+            // Act - Register second time (should fail)
+            var secondResponse = await _client.PostAsync($"{_baseUrl}/register", content);
 
-
-
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
+            Assert.NotEqual(HttpStatusCode.OK, secondResponse.StatusCode); // Should be 400/409/422 etc.
         }
-        /*
-                [Fact]
-                public async Task Register_InvalidUser_ReturnsBadRequest()
-                {
-                    // Not implemented yet
 
 
-                    // Arrange:
-                    // - Create a RegisterUserDto with invalid data (empty username, weak password, invalid email)
-                    // - Serialize it to JSON content
-
-                    // Act:
-                    // - POST to /api/auth/register with the invalid JSON content
-                    // - Get the response
-
-                    // Assert:
-                    // - Response status code should be 400 Bad Request
-                    // - Response should contain error message
-                }
-
-                [Fact]
-                public async Task Register_DuplicateUser_ReturnsBadRequest()
-                {
-                    // Arrange:
-                    // - Create a RegisterUserDto with valid data
-                    // - Register the user once (should succeed)
-                    // - Try to register the same user again
-
-                    // Act:
-                    // - POST to /api/auth/register with the same user data twice
-                    // - Get the second response
-
-                    // Assert:
-                    // - First registration should return 200 OK
-                    // - Second registration should return 400 Bad Request
-                    // - Second response should contain appropriate error message
-                }
-
-#endregion
-                */
-
-        #region LoginAsync Tests
-
-        // tests
 
         #endregion
 
+
+        #region LoginAsync Tests
+
+        // Register user then login with correct credentials
+        [Fact]
+        public async Task Login_ValidCredentials_ReturnsOkWithToken()
+        {
+            // Arrange - First register a user
+            var uniqueId = Guid.NewGuid().ToString("N")[..8];
+            var registerRequest = new RegisterUserDto
+            {
+                Username = $"testuser_{uniqueId}",
+                Email = $"testuser_{uniqueId}@email.com",
+                Password = "StrongPassword123",
+                FirstName = "Test",
+                LastName = "User"
+            };
+            var registerContent = CreateJsonContent(registerRequest);
+
+            // Register the user first
+            var registerResponse = await _client.PostAsync($"{_baseUrl}/register", registerContent);
+            registerResponse.EnsureSuccessStatusCode();
+
+            // Arrange - Now prepare login request
+            var loginRequest = new UserDto
+            {
+                Username = registerRequest.Username,
+                Password = registerRequest.Password
+            };
+            var loginContent = CreateJsonContent(loginRequest);
+
+            // Act - Login with the registered user credentials
+            var loginResponse = await _client.PostAsync($"{_baseUrl}/login", loginContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+            var tokenResponse = await DeserializeResponse<TokenResponseDto>(loginResponse);
+            Assert.NotNull(tokenResponse);
+            Assert.NotNull(tokenResponse.AccessToken);
+            Assert.NotEmpty(tokenResponse.AccessToken);
+            Assert.NotNull(tokenResponse.RefreshToken);
+            Assert.NotEmpty(tokenResponse.RefreshToken);
+
+        }
+
+        // Login with username that doesn't exist
+        [Fact]
+        public async Task Login_InvalidUsername_ReturnsBadRequest()
+        {
+            // Arrange - Create login request with username that doesn't exist
+            var loginRequest = new UserDto
+            {
+                Username = $"nonexistent_user_{Guid.NewGuid().ToString("N")[..8]}",
+                Password = "SomePassword123"
+            };
+            var loginContent = CreateJsonContent(loginRequest);
+
+            // Act - Try to login with non-existent username
+            var response = await _client.PostAsync($"{_baseUrl}/login", loginContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains("Invalid username or password", responseContent);
+        }
+
+        [Fact]
+        public async Task Login_InvalidPassword_ReturnsBadRequest()
+        {
+
+            // Login with existing username but wrong password
+
+
+            // Arrange - First register a user
+            var uniqueId = Guid.NewGuid().ToString("N")[..8];
+            var registerRequest = new RegisterUserDto
+            {
+                Username = $"testuser_{uniqueId}",
+                Email = $"testuser_{uniqueId}@email.com",
+                Password = "CorrectPassword123",
+                FirstName = "Test",
+                LastName = "User"
+            };
+            var registerContent = CreateJsonContent(registerRequest);
+
+            // Register the user first
+            var registerResponse = await _client.PostAsync($"{_baseUrl}/register", registerContent);
+            registerResponse.EnsureSuccessStatusCode();
+
+            // Arrange - Now prepare login request with wrong password
+            var loginRequest = new UserDto
+            {
+                Username = registerRequest.Username, // Correct username
+                Password = "WrongPassword456"        // Wrong password
+            };
+            var loginContent = CreateJsonContent(loginRequest);
+
+            // Act - Try to login with correct username but wrong password
+            var response = await _client.PostAsync($"{_baseUrl}/login", loginContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains("Invalid username or password", responseContent);
+        }
+
+        #endregion
+
+
+        // TBD more auth tests...
+
+
         #region ChangePassword Tests
-
-        // tests
-
+        // [Fact]
+        // public async Task ChangePassword_WithoutAuth_ReturnsUnauthorized()
+        // {
+        //     // Try to change password without being logged in
+        //     // TODO: Implement
+        // }
         #endregion
 
         #region AlterUserRoleAsync Tests
 
-        // tests
+        // tbd
 
         #endregion
 
         #region RefreshTokensAsync Tests
 
-        // tests
+        // REFRESH TOKEN TESTS
+        // [Fact]
+        // public async Task RefreshToken_ValidToken_ReturnsNewTokens()
+        // {
+        //     // Login and use refresh token to get new access token
+        //     // TODO: Implement
+        // }
+
+        // [Fact]
+        // public async Task RefreshToken_InvalidToken_ReturnsUnauthorized()
+        // {
+        //     // Try to refresh with invalid/expired refresh token
+        //     // TODO: Implement
+        // }
 
         #endregion
 
@@ -212,4 +288,3 @@ namespace Video_Project_Suite.Tests.Controllers
 
 
 }
-

@@ -30,7 +30,7 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Login an existing user
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
         {
             var result = await authService.LoginAsync(request);
             if (result == null)
