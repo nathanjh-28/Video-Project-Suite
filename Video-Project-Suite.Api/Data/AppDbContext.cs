@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Video_Project_Suite.Api.Models;
+using Video_Project_Suite.Api.Models.Project;
 
 namespace Video_Project_Suite.Api.Data;
 
@@ -16,4 +17,5 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<User> User => Set<User>();
+    public DbSet<Project> Project => Set<Project>();
 }
