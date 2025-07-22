@@ -12,18 +12,18 @@ public interface IProjectService
     Task<IEnumerable<ProjectDto>> GetProjectsByUserNameAsync(string username);
 
     // Get project by ID
-    Task<ProjectDto> GetProjectByIdAsync(int projectId);
+    Task<ProjectDto?> GetProjectByIdAsync(int projectId);
 
     // helper method - get all users with roles of "x"
     Task<IEnumerable<string>> GetUsersWithRoleAsync(string role);
 
     // Create a new project
-    Task<ProjectDto> CreateProjectAsync(ProjectDto newProjectDto);
+    Task<ProjectDto?> CreateProjectAsync(ProjectDto newProjectDto);
 
     // Update an existing project
-    Task<ProjectDto> UpdateProjectAsync(int projectId, ProjectDto projectDto);
+    Task<ProjectDto?> UpdateProjectAsync(int projectId, ProjectDto projectDto);
 
     // Delete a project
-    Task<bool> DeleteProjectAsync(int projectId);
+    Task<ProjectDto?> DeleteProjectAsync(int projectId);
 
 }

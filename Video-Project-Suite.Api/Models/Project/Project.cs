@@ -1,5 +1,8 @@
 using System;
 
+// add restrictions to properties
+using System.ComponentModel.DataAnnotations;
+
 namespace Video_Project_Suite.Api.Models.Project;
 
 public class Project
@@ -8,6 +11,8 @@ public class Project
     public int Id { get; set; }
 
     // short_name
+    [Required]
+    [StringLength(100)]
     public string ShortName { get; set; } = string.Empty;
 
     // focus

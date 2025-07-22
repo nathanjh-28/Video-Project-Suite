@@ -58,11 +58,14 @@ namespace Video_Project_Suite.Tests.Controllers
             _client?.Dispose();
         }
 
-        // [Fact]
-        // public async Task GetAllProjects_ReturnsOk()
-        // {
-        //     // tbd
-        // }
+        #region GetAllProjects
+
+        // True Positive Test: Retrieve all projects when projects exist in db
+
+        // True Negative Test: Retrieve all projects when no projects exist in db
+
+
+        #endregion
 
     }
 
