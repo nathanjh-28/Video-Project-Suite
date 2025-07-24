@@ -35,11 +35,11 @@ public class ProjectDto
 
     public string Comments { get; set; } = string.Empty;
 
-    // start_date
-    public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    // start date only
+    public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
-    // end_date
-    public DateTime EndDate { get; set; } = DateTime.UtcNow;
+    // end date day only
+    public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
     // TBD:
 

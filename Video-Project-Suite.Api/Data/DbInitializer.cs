@@ -67,8 +67,8 @@ public class DbInitializer
                 ExpenseBudget = 1000.0m,
                 ExpenseSummary = "Expense Summary A",
                 Comments = "Comments A",
-                StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddMonths(1)
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(1)
             },
             new Project
             {
@@ -80,8 +80,8 @@ public class DbInitializer
                 ExpenseBudget = 2000.0m,
                 ExpenseSummary = "Expense Summary B",
                 Comments = "Comments B",
-                StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddMonths(2)
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2)
             },
             new Project
             {
@@ -93,8 +93,8 @@ public class DbInitializer
                 ExpenseBudget = 3000.0m,
                 ExpenseSummary = "Expense Summary C",
                 Comments = "Comments C",
-                StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddMonths(3)
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2)
             }
         };
 

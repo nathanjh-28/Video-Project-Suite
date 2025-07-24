@@ -121,8 +121,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 1000.0m,
                 ExpenseSummary = "Expense Summary",
                 Comments = "Project Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
             };
 
             // Act
@@ -138,8 +138,8 @@ namespace Video_Project_Suite.Api.Tests.Services
             Assert.Equal(1000.0m, projectDto.ExpenseBudget);
             Assert.Equal("Expense Summary", projectDto.ExpenseSummary);
             Assert.Equal("Project Comments", projectDto.Comments);
-            Assert.Equal(DateTime.Now.Date, projectDto.StartDate.Date);
-            Assert.Equal(DateTime.Now.AddMonths(1).Date, projectDto.EndDate.Date);
+            Assert.Equal(DateOnly.FromDateTime(DateTime.Now), projectDto.StartDate);
+            Assert.Equal(DateOnly.FromDateTime(DateTime.Now.AddMonths(1)), projectDto.EndDate);
             Assert.True(projectDto.StartDate < projectDto.EndDate, "Start date should be before end date");
         }
 
@@ -182,8 +182,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 1000.0m,
                 ExpenseSummary = "Expense Summary",
                 Comments = "Project Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
             };
             _context.Project.Add(project);
             _context.SaveChanges();
@@ -245,8 +245,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 1000.0m,
                 ExpenseSummary = "Expense Summary",
                 Comments = "Project Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
             };
             _context.Project.Add(project);
             _context.SaveChanges();
@@ -286,8 +286,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 2000.0m,
                 ExpenseSummary = "Updated Expense Summary",
                 Comments = "Updated Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(2)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(2))
             };
 
             // Act
@@ -315,8 +315,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 1000.0m,
                 ExpenseSummary = "Expense Summary",
                 Comments = "Project Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(1)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
             };
             _context.Project.Add(project);
             _context.SaveChanges();
@@ -331,8 +331,8 @@ namespace Video_Project_Suite.Api.Tests.Services
                 ExpenseBudget = 2000.0m,
                 ExpenseSummary = "Updated Expense Summary",
                 Comments = "Updated Comments",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(2)
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(2))
             };
 
             // Act

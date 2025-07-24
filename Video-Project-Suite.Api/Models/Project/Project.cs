@@ -40,11 +40,10 @@ public class Project
     public string Comments { get; set; } = string.Empty;
 
     // start_date
-    public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    public DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
     // end_date
-    public DateTime EndDate { get; set; } = DateTime.UtcNow;
-
+    public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     // TBD:
 
     // Milestone

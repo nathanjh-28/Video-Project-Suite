@@ -104,6 +104,11 @@ public class ProjectService : IProjectService
     public async Task<IEnumerable<ProjectDto>> GetAllProjectsAsync()
     {
         var projects = await _context.Project.ToListAsync();
+        if (projects == null || !projects.Any())
+        {
+            return Enumerable.Empty<ProjectDto>(); // Return an empty list if no projects exist
+        }
+
         return projects.Select(p => new ProjectDto
         {
             // need all the properties in ProjectDto

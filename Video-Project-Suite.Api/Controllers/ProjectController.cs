@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Services;
 
 namespace Video_Project_Suite.Api.Controllers
@@ -11,17 +13,22 @@ namespace Video_Project_Suite.Api.Controllers
         // Get all projects
 
         [HttpGet("projects")]
-        public IActionResult GetAllProjects()
+        public async Task<IActionResult> GetAllProjects()
         {
-            // need to make function async, removing for now to supress errors
-            return Ok("get all projects");
+            var projects = await projectService.GetAllProjectsAsync();
+            return Ok(projects);
         }
 
         // Get a project by ID
         [HttpGet("project/{projectId}")]
-        public IActionResult GetProjectById(int projectId)
+        public async Task<IActionResult> GetProjectById(int projectId)
         {
-            return Ok($"get project by id {projectId}");
+            var project = await projectService.GetProjectByIdAsync(projectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+            return Ok(project);
         }
 
         // Get projects by user name
@@ -35,39 +42,75 @@ namespace Video_Project_Suite.Api.Controllers
         // Get Create a new project, returns users with roles
 
         [HttpGet("project/new")]
-        public IActionResult GetCreateNewProject()
+        public async Task<ActionResult<ProjectDto>> GetCreateNewProject()
         {
-            return Ok("get create new project");
+            // This method should return a view or a DTO for creating a new project
+            // For now, we will just return an empty ProjectDto
+            var newProjectDto = new ProjectDto();
+            return Ok(newProjectDto);
         }
-
 
         // Post Create a new project
         [HttpPost("project/new")]
-        public IActionResult CreateProject()
+        public async Task<IActionResult> CreateProject(ProjectDto newProjectDto)
         {
-            return Ok("create new project");
+            if (newProjectDto == null)
+            {
+                return BadRequest("Project data is required.");
+            }
+
+            var createdProject = await projectService.CreateProjectAsync(newProjectDto);
+            if (createdProject == null)
+            {
+                return BadRequest("Failed to create project.");
+            }
+            return Ok(createdProject);
+            // can't use this because the dto does not have the id, need helper method for
+            // getting an id with short name
+            // return CreatedAtAction(nameof(GetProjectById), new { projectShortName = createdProject.ShortName }, createdProject);
         }
 
 
         // Get Update an existing project, return current project data
-        [HttpGet("project/{projectId}/edit")]
-        public IActionResult GetUpdateProject(int projectId)
+        [HttpGet("project/{projectId}/update")]
+        public async Task<IActionResult> GetUpdateProject(int projectId)
         {
-            return Ok($"get update project {projectId}");
+            var updated_project = await projectService.GetProjectByIdAsync(projectId);
+            if (updated_project == null)
+            {
+                return NotFound();
+            }
+            return Ok(updated_project);
         }
 
         // Put Update an existing project
-        [HttpPut("project/{projectId}")]
-        public IActionResult UpdateProject(int projectId)
+        [HttpPut("project/{projectId}/update")]
+        public async Task<IActionResult> UpdateProject(int projectId, ProjectDto projectDto)
         {
-            return Ok($"update project {projectId}");
+            if (projectDto == null)
+            {
+                return BadRequest("Project data is required.");
+            }
+
+            var updatedProject = await projectService.UpdateProjectAsync(projectId, projectDto);
+            if (updatedProject == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedProject);
         }
+
 
         // Delete a project by ID
         [HttpDelete("project/{projectId}")]
-        public IActionResult DeleteProject(int projectId)
+        public async Task<IActionResult> DeleteProject(int projectId)
         {
-            return Ok($"delete project {projectId}");
+            var result = await projectService.DeleteProjectAsync(projectId);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return NoContent(); // Return 204 No Content on successful deletion
         }
 
     }
