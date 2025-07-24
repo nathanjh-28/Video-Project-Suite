@@ -28,6 +28,19 @@ public interface IAuthService
     // logout
 
     // delete account
+    Task<User?> DeleteAccountAsync(int userId);
+
+    // Get all Users
+    Task<IEnumerable<User>> GetAllUsersAsync();
+
+    // Get a user by ID
+    Task<User?> GetUserByIdAsync(int userId);
+
+    // Update User Account
+    Task<User?> UpdateUserAsync(int userId, RegisterUserDto user);
+
+    // Get Users with a specific role
+    Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName);
 
 
 }
