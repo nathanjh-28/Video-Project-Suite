@@ -33,6 +33,16 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
 
+        // Add Cors
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowReactApp",
+                    builder => builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+        });
+
         // For .NET 8, use AddEndpointsApiExplorer instead of AddOpenApi
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -75,6 +85,8 @@ public class Program
             app.MapScalarApiReference();
 
         }
+        // Use Cors
+        app.UseCors("AllowReactApp");
 
         // Enable HTTPS redirection
         app.UseHttpsRedirection();
