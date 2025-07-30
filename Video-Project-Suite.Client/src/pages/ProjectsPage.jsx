@@ -74,9 +74,12 @@ const ProjectsPage = () => {
                             <TableCell>Project Title</TableCell>
                             <TableCell>Type</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Producer</TableCell>
+                            <TableCell>Budget</TableCell>
+                            <TableCell>Start Date</TableCell>
+                            <TableCell>End Date</TableCell>
+                            {/* <TableCell>Producer</TableCell>
                             <TableCell>Client</TableCell>
-                            <TableCell>Editor</TableCell>
+                            <TableCell>Editor</TableCell> */}
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -101,9 +104,9 @@ const ProjectsPage = () => {
                                         size="small"
                                     />
                                 </TableCell>
-                                <TableCell>{project.producer}</TableCell>
-                                <TableCell>{project.client}</TableCell>
-                                <TableCell>{project.editor}</TableCell>
+                                <TableCell>${project.expenseBudget}</TableCell>
+                                <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
+                                <TableCell>{new Date(project.endDate).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         size="small"

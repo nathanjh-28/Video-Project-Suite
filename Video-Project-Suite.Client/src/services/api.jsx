@@ -1,5 +1,5 @@
 // src/services/api.js
-const API_BASE_URL = 'https://localhost:5001/api'; // Replace with your API URL
+const API_BASE_URL = '/api'; // Replace with your API URL
 
 // Mock data for development
 const mockProjects = [
@@ -64,6 +64,7 @@ const mockProjects = [
 
 // API helper function
 const apiCall = async (endpoint, options = {}) => {
+    console.log(`API Call: ${API_BASE_URL}${endpoint}`, options);
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             headers: {
@@ -77,7 +78,13 @@ const apiCall = async (endpoint, options = {}) => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        // Only parse JSON if there's content
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return await response.json();
+        } else {
+            return null;
+        }
     } catch (error) {
         console.error('API call failed:', error);
         throw error;
@@ -89,8 +96,8 @@ export const projectApi = {
     getAll: async () => {
         try {
             // Replace with actual API call
-            // return await apiCall('/projects');
-            return mockProjects; // Using mock data for now
+            return await apiCall('/Project/projects')
+            // return mockProjects; // Using mock data for now
         } catch (error) {
             console.error('Failed to fetch projects:', error);
             return mockProjects; // Fallback to mock data
@@ -99,8 +106,8 @@ export const projectApi = {
 
     getById: async (id) => {
         try {
-            // return await apiCall(`/projects/${id}`);
-            return mockProjects.find(p => p.id === parseInt(id));
+            return await apiCall(`/Project/project/${id}`);
+            // return mockProjects.find(p => p.id === parseInt(id));
         } catch (error) {
             console.error('Failed to fetch project:', error);
             throw error;
@@ -109,19 +116,19 @@ export const projectApi = {
 
     create: async (projectData) => {
         try {
-            // return await apiCall('/projects', {
-            //   method: 'POST',
-            //   body: JSON.stringify(projectData),
-            // });
+            return await apiCall('/Project/project/new', {
+                method: 'POST',
+                body: JSON.stringify(projectData),
+            });
 
-            // Mock implementation
-            const newProject = {
-                id: Date.now(),
-                created: new Date().toISOString().split('T')[0],
-                ...projectData
-            };
-            mockProjects.push(newProject);
-            return newProject;
+            // // Mock implementation
+            // const newProject = {
+            //     id: Date.now(),
+            //     created: new Date().toISOString().split('T')[0],
+            //     ...projectData
+            // };
+            // mockProjects.push(newProject);
+            // return newProject;
         } catch (error) {
             console.error('Failed to create project:', error);
             throw error;
@@ -130,17 +137,17 @@ export const projectApi = {
 
     update: async (id, projectData) => {
         try {
-            // return await apiCall(`/projects/${id}`, {
-            //   method: 'PUT',
-            //   body: JSON.stringify(projectData),
-            // });
+            return await apiCall(`/Project/project/${id}/update`, {
+                method: 'PUT',
+                body: JSON.stringify(projectData),
+            });
 
             // Mock implementation
-            const index = mockProjects.findIndex(p => p.id === parseInt(id));
-            if (index !== -1) {
-                mockProjects[index] = { ...mockProjects[index], ...projectData };
-                return mockProjects[index];
-            }
+            // const index = mockProjects.findIndex(p => p.id === parseInt(id));
+            // if (index !== -1) {
+            //     mockProjects[index] = { ...mockProjects[index], ...projectData };
+            //     return mockProjects[index];
+            // }
         } catch (error) {
             console.error('Failed to update project:', error);
             throw error;
@@ -149,13 +156,13 @@ export const projectApi = {
 
     delete: async (id) => {
         try {
-            // await apiCall(`/projects/${id}`, { method: 'DELETE' });
+            await apiCall(`/Project/project/${id}`, { method: 'DELETE' });
 
-            // Mock implementation
-            const index = mockProjects.findIndex(p => p.id === parseInt(id));
-            if (index !== -1) {
-                mockProjects.splice(index, 1);
-            }
+            // // Mock implementation
+            // const index = mockProjects.findIndex(p => p.id === parseInt(id));
+            // if (index !== -1) {
+            //     mockProjects.splice(index, 1);
+            // }
         } catch (error) {
             console.error('Failed to delete project:', error);
             throw error;
