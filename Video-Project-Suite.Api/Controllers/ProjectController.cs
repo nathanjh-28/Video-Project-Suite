@@ -33,12 +33,6 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Get projects by user name
 
-        [HttpGet("user/{username}/projects")]
-        public IActionResult GetProjectsByUserName(string username)
-        {
-            return Ok($"get projects by user name {username}");
-        }
-
         // Get Create a new project, returns users with roles
 
         [HttpGet("project/new")]
@@ -46,6 +40,7 @@ namespace Video_Project_Suite.Api.Controllers
         {
             // This method should return a view or a DTO for creating a new project
             // For now, we will just return an empty ProjectDto
+            // This would also gather up users with different Project Roles
             var newProjectDto = new ProjectDto();
             return Ok(newProjectDto);
         }
@@ -64,10 +59,8 @@ namespace Video_Project_Suite.Api.Controllers
             {
                 return BadRequest("Failed to create project.");
             }
-            return Ok(createdProject);
-            // can't use this because the dto does not have the id, need helper method for
-            // getting an id with short name
-            // return CreatedAtAction(nameof(GetProjectById), new { projectShortName = createdProject.ShortName }, createdProject);
+            // return Ok(createdProject);
+            return CreatedAtAction(nameof(GetProjectById), new { projectId = createdProject.Id }, createdProject);
         }
 
 

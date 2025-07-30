@@ -15,11 +15,13 @@ public class Project
     [StringLength(100)]
     public string ShortName { get; set; } = string.Empty;
 
+    // Title, the default value is the ShortName
+    public string Title { get; set; } = string.Empty;
+
     // focus
     public string Focus { get; set; } = string.Empty;
 
     // scope
-
     public string Scope { get; set; } = string.Empty;
 
     // price_per_unit
@@ -46,9 +48,14 @@ public class Project
     public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     // TBD:
 
-    // Milestone
+    // Milestones to be implemented later on
+    // for now we are use a string for status
+    public string Status { get; set; } = string.Empty;
 
-    // Project Type
+    // Project Type to be implemented later on
+    // for now we are use a string for type
+    public string Type { get; set; } = string.Empty;
 
     // Users associated with project
+    // this will be a join table in the database
 }

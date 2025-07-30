@@ -27,6 +27,7 @@ public class ProjectService : IProjectService
         var newProject = new Project
         {
             ShortName = newProjectDto.ShortName,
+            Title = newProjectDto.Title,
             Focus = newProjectDto.Focus,
             Scope = newProjectDto.Scope,
             PricePerUnit = newProjectDto.PricePerUnit,
@@ -35,7 +36,9 @@ public class ProjectService : IProjectService
             ExpenseSummary = newProjectDto.ExpenseSummary,
             Comments = newProjectDto.Comments,
             StartDate = newProjectDto.StartDate,
-            EndDate = newProjectDto.EndDate
+            EndDate = newProjectDto.EndDate,
+            Status = newProjectDto.Status,
+            Type = newProjectDto.Type
         };
 
         var entry = _context.Project.Add(newProject);
@@ -49,7 +52,9 @@ public class ProjectService : IProjectService
         // Map the created project to ProjectDto
         var createdProject = new ProjectDto
         {
+            Id = entry.Entity.Id,
             ShortName = entry.Entity.ShortName,
+            Title = entry.Entity.Title,
             Focus = entry.Entity.Focus,
             Scope = entry.Entity.Scope,
             PricePerUnit = entry.Entity.PricePerUnit,
@@ -58,7 +63,9 @@ public class ProjectService : IProjectService
             ExpenseSummary = entry.Entity.ExpenseSummary,
             Comments = entry.Entity.Comments,
             StartDate = entry.Entity.StartDate,
-            EndDate = entry.Entity.EndDate
+            EndDate = entry.Entity.EndDate,
+            Status = entry.Entity.Status,
+            Type = entry.Entity.Type
         };
 
         return createdProject; // Return the created project DTO
@@ -79,6 +86,8 @@ public class ProjectService : IProjectService
         await _context.SaveChangesAsync();
         var deletedProjectDto = new ProjectDto
         {
+            Id = entity.Entity.Id,
+            Title = entity.Entity.Title,
             ShortName = entity.Entity.ShortName,
             Focus = entity.Entity.Focus,
             Scope = entity.Entity.Scope,
@@ -88,7 +97,9 @@ public class ProjectService : IProjectService
             ExpenseSummary = entity.Entity.ExpenseSummary,
             Comments = entity.Entity.Comments,
             StartDate = entity.Entity.StartDate,
-            EndDate = entity.Entity.EndDate
+            EndDate = entity.Entity.EndDate,
+            Status = entity.Entity.Status,
+            Type = entity.Entity.Type
         };
 
 
@@ -112,6 +123,8 @@ public class ProjectService : IProjectService
         return projects.Select(p => new ProjectDto
         {
             // need all the properties in ProjectDto
+            Id = p.Id,
+            Title = p.Title,
             ShortName = p.ShortName,
             Focus = p.Focus,
             Scope = p.Scope,
@@ -121,7 +134,9 @@ public class ProjectService : IProjectService
             ExpenseSummary = p.ExpenseSummary,
             Comments = p.Comments,
             StartDate = p.StartDate,
-            EndDate = p.EndDate
+            EndDate = p.EndDate,
+            Status = p.Status,
+            Type = p.Type
 
         });
 
@@ -140,6 +155,8 @@ public class ProjectService : IProjectService
         }
         var retrieved_project = new ProjectDto
         {
+            Id = project.Id,
+            Title = project.Title,
             ShortName = project.ShortName,
             Focus = project.Focus,
             Scope = project.Scope,
@@ -149,7 +166,9 @@ public class ProjectService : IProjectService
             ExpenseSummary = project.ExpenseSummary,
             Comments = project.Comments,
             StartDate = project.StartDate,
-            EndDate = project.EndDate
+            EndDate = project.EndDate,
+            Status = project.Status,
+            Type = project.Type
         };
 
         return retrieved_project;
@@ -168,6 +187,7 @@ public class ProjectService : IProjectService
         }
         else
         {
+            oldProject.Title = projectDto.Title;
             oldProject.ShortName = projectDto.ShortName;
             oldProject.Focus = projectDto.Focus;
             oldProject.Scope = projectDto.Scope;
@@ -178,6 +198,8 @@ public class ProjectService : IProjectService
             oldProject.Comments = projectDto.Comments;
             oldProject.StartDate = projectDto.StartDate;
             oldProject.EndDate = projectDto.EndDate;
+            oldProject.Status = projectDto.Status;
+            oldProject.Type = projectDto.Type;
 
             _context.Project.Update(oldProject);
             _context.SaveChanges();
@@ -190,6 +212,8 @@ public class ProjectService : IProjectService
             // Map the updated project to ProjectDto
             var updatedProjectDto = new ProjectDto
             {
+                Id = newProjectUpdated.Id,
+                Title = newProjectUpdated.Title,
                 ShortName = newProjectUpdated.ShortName,
                 Focus = newProjectUpdated.Focus,
                 Scope = newProjectUpdated.Scope,
@@ -199,23 +223,15 @@ public class ProjectService : IProjectService
                 ExpenseSummary = newProjectUpdated.ExpenseSummary,
                 Comments = newProjectUpdated.Comments,
                 StartDate = newProjectUpdated.StartDate,
-                EndDate = newProjectUpdated.EndDate
+                EndDate = newProjectUpdated.EndDate,
+                Status = newProjectUpdated.Status,
+                Type = newProjectUpdated.Type
             };
 
             return updatedProjectDto;
         }
     }
     #endregion
-
-    // Helper Methods
-    public Task<IEnumerable<ProjectDto>> GetProjectsByUserNameAsync(string username)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<string>> GetUsersWithRoleAsync(string role)
-    {
-        throw new NotImplementedException();
-    }
-
 }
+
+

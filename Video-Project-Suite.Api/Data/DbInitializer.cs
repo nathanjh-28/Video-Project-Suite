@@ -59,7 +59,8 @@ public class DbInitializer
         {
             new Project
             {
-                ShortName = "Project A",
+                Title = "Project A Title",
+                ShortName = "PrjtA",
                 Focus = "Focus A",
                 Scope = "Scope A",
                 PricePerUnit = 100.0m,
@@ -68,11 +69,14 @@ public class DbInitializer
                 ExpenseSummary = "Expense Summary A",
                 Comments = "Comments A",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(1)
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(1),
+                Status = "In Progress",
+                Type = "Type A"
             },
             new Project
             {
-                ShortName = "Project B",
+                Title = "Project B Title",
+                ShortName = "PrjtB",
                 Focus = "Focus B",
                 Scope = "Scope B",
                 PricePerUnit = 200.0m,
@@ -81,11 +85,14 @@ public class DbInitializer
                 ExpenseSummary = "Expense Summary B",
                 Comments = "Comments B",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2)
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2),
+                Status = "In Progress",
+                Type = "Type B"
             },
             new Project
             {
-                ShortName = "Project C",
+                Title = "Project C Title",
+                ShortName = "PrjtC",
                 Focus = "Focus C",
                 Scope = "Scope C",
                 PricePerUnit = 300.0m,
@@ -94,7 +101,9 @@ public class DbInitializer
                 ExpenseSummary = "Expense Summary C",
                 Comments = "Comments C",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2)
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(2),
+                Status = "In Progress",
+                Type = "Type C"
             }
         };
 

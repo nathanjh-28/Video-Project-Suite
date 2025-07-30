@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -43,6 +44,73 @@ namespace Video_Project_Suite.Api.Tests.Services
             _context.Dispose();
         }
 
+        // Helper method to create one dummy projectDto
+        private ProjectDto CreateProjectDto()
+        {
+            var temp_handle = Guid.NewGuid();
+            return new ProjectDto
+            {
+                Title = $"Project Title {temp_handle:N}",
+                ShortName = temp_handle.ToString("N").Substring(0, 6), // Short name is a substring of the GUID
+                Focus = $"Focus Area {temp_handle:N}",
+                Scope = $"Project Scope {temp_handle:N}",
+                PricePerUnit = 10,
+                QtyOfUnits = 5,
+                ExpenseBudget = 1000,
+                ExpenseSummary = "Expense Summary",
+                Comments = "Comments",
+                StartDate = DateOnly.FromDateTime(DateTime.Now),
+                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1)),
+                Status = "Project Status",
+                Type = "Project Type"
+            };
+        }
+
+        // Helper method to convert Project to ProjectDto
+        private ProjectDto ConvertToProjectDtoFromProject(Project project)
+        {
+            return new ProjectDto
+            {
+                Id = project.Id,
+                ShortName = project.ShortName,
+                Title = project.Title,
+                Focus = project.Focus,
+                Scope = project.Scope,
+                PricePerUnit = project.PricePerUnit,
+                QtyOfUnits = project.QtyOfUnits,
+                ExpenseBudget = project.ExpenseBudget,
+                ExpenseSummary = project.ExpenseSummary,
+                Comments = project.Comments,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Status = project.Status,
+                Type = project.Type
+            };
+        }
+
+        // Helper method to convert ProjectDto to Project
+        private Project ConvertToProjectFromProjectDto(ProjectDto projectDto)
+        {
+            return new Project
+            {
+                Id = projectDto.Id,
+                ShortName = projectDto.ShortName,
+                Title = projectDto.Title,
+                Focus = projectDto.Focus,
+                Scope = projectDto.Scope,
+                PricePerUnit = projectDto.PricePerUnit,
+                QtyOfUnits = projectDto.QtyOfUnits,
+                ExpenseBudget = projectDto.ExpenseBudget,
+                ExpenseSummary = projectDto.ExpenseSummary,
+                Comments = projectDto.Comments,
+                StartDate = projectDto.StartDate,
+                EndDate = projectDto.EndDate,
+                Status = projectDto.Status,
+                Type = projectDto.Type
+            };
+        }
+
+
         // Test methods for ProjectService
 
         #region GetAllProjectsAsync
@@ -55,8 +123,8 @@ namespace Video_Project_Suite.Api.Tests.Services
 
             // This will have to be updated as I alter required properties in ProjectDto
 
-            var project1 = new Project { Id = 1, ShortName = "Project 1" };
-            var project2 = new Project { Id = 2, ShortName = "Project 2" };
+            var project1 = ConvertToProjectFromProjectDto(CreateProjectDto());
+            var project2 = ConvertToProjectFromProjectDto(CreateProjectDto());
             _context.Project.AddRange(project1, project2);
             _context.SaveChanges();
 
@@ -111,36 +179,27 @@ namespace Video_Project_Suite.Api.Tests.Services
         public async Task CreateProjectAsync_ShouldReturnProject_WhenValidData()
         {
             // Arrange
-            var newProjectDto = new ProjectDto
-            {
-                ShortName = "New Project",
-                Focus = "Focus Area",
-                Scope = "Project Scope",
-                PricePerUnit = 100.0m,
-                QtyOfUnits = 10,
-                ExpenseBudget = 1000.0m,
-                ExpenseSummary = "Expense Summary",
-                Comments = "Project Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
-            };
+            var newProjectDto = CreateProjectDto();
 
             // Act
             var projectDto = await _projectService.CreateProjectAsync(newProjectDto);
 
             // Assert
             Assert.NotNull(projectDto);
-            Assert.Equal("New Project", projectDto.ShortName);
-            Assert.Equal("Focus Area", projectDto.Focus);
-            Assert.Equal("Project Scope", projectDto.Scope);
-            Assert.Equal(100.0m, projectDto.PricePerUnit);
-            Assert.Equal(10, projectDto.QtyOfUnits);
-            Assert.Equal(1000.0m, projectDto.ExpenseBudget);
-            Assert.Equal("Expense Summary", projectDto.ExpenseSummary);
-            Assert.Equal("Project Comments", projectDto.Comments);
-            Assert.Equal(DateOnly.FromDateTime(DateTime.Now), projectDto.StartDate);
-            Assert.Equal(DateOnly.FromDateTime(DateTime.Now.AddMonths(1)), projectDto.EndDate);
+            Assert.Equal(newProjectDto.ShortName, projectDto.ShortName);
+            Assert.Equal(newProjectDto.Focus, projectDto.Focus);
+            Assert.Equal(newProjectDto.Scope, projectDto.Scope);
+            Assert.Equal(newProjectDto.PricePerUnit, projectDto.PricePerUnit);
+            Assert.Equal(newProjectDto.QtyOfUnits, projectDto.QtyOfUnits);
+            Assert.Equal(newProjectDto.ExpenseBudget, projectDto.ExpenseBudget);
+            Assert.Equal(newProjectDto.ExpenseSummary, projectDto.ExpenseSummary);
+            Assert.Equal(newProjectDto.Comments, projectDto.Comments);
+            Assert.Equal(newProjectDto.StartDate, projectDto.StartDate);
+            Assert.Equal(newProjectDto.EndDate, projectDto.EndDate);
             Assert.True(projectDto.StartDate < projectDto.EndDate, "Start date should be before end date");
+            Assert.Equal(newProjectDto.Status, projectDto.Status);
+            Assert.Equal(newProjectDto.Type, projectDto.Type);
+            Assert.Equal(newProjectDto.Title, projectDto.Title);
         }
 
         #endregion
@@ -171,20 +230,8 @@ namespace Video_Project_Suite.Api.Tests.Services
         public async Task GetProjectByIdAsync_ShouldReturnProject_WhenProjectExists()
         {
             // Arrange
-            var project = new Project
-            {
-                Id = 1,
-                ShortName = "Existing Project",
-                Focus = "Focus Area",
-                Scope = "Project Scope",
-                PricePerUnit = 100.0m,
-                QtyOfUnits = 10,
-                ExpenseBudget = 1000.0m,
-                ExpenseSummary = "Expense Summary",
-                Comments = "Project Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
-            };
+            var project = ConvertToProjectFromProjectDto(CreateProjectDto());
+            project.Id = 11; // Set a specific ID for the project
             _context.Project.Add(project);
             _context.SaveChanges();
 
@@ -234,20 +281,8 @@ namespace Video_Project_Suite.Api.Tests.Services
         public async Task DeleteProjectAsync_ShouldReturnDeletedProject_WhenProjectExists()
         {
             // Arrange
-            var project = new Project
-            {
-                Id = 1,
-                ShortName = "Project to Delete",
-                Focus = "Focus Area",
-                Scope = "Project Scope",
-                PricePerUnit = 100.0m,
-                QtyOfUnits = 10,
-                ExpenseBudget = 1000.0m,
-                ExpenseSummary = "Expense Summary",
-                Comments = "Project Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
-            };
+            var project = ConvertToProjectFromProjectDto(CreateProjectDto());
+            project.Id = 111; // Set a specific ID for the project
             _context.Project.Add(project);
             _context.SaveChanges();
 
@@ -276,19 +311,7 @@ namespace Video_Project_Suite.Api.Tests.Services
         {
             // Arrange
             int nonExistentProjectId = 2147483647; // This is the largest possible value for an int, assuming no project with this ID exists in the database.
-            var updateProjectDto = new ProjectDto
-            {
-                ShortName = "Updated Project",
-                Focus = "Updated Focus",
-                Scope = "Updated Scope",
-                PricePerUnit = 200.0m,
-                QtyOfUnits = 20,
-                ExpenseBudget = 2000.0m,
-                ExpenseSummary = "Updated Expense Summary",
-                Comments = "Updated Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(2))
-            };
+            var updateProjectDto = CreateProjectDto();
 
             // Act
             var result = await _projectService.UpdateProjectAsync(nonExistentProjectId, updateProjectDto);
@@ -304,36 +327,12 @@ namespace Video_Project_Suite.Api.Tests.Services
         public async Task UpdateProjectAsync_ShouldReturnUpdatedProject_WhenProjectExists()
         {
             // Arrange
-            var project = new Project
-            {
-                Id = 1,
-                ShortName = "Project to Update",
-                Focus = "Focus Area",
-                Scope = "Project Scope",
-                PricePerUnit = 100.0m,
-                QtyOfUnits = 10,
-                ExpenseBudget = 1000.0m,
-                ExpenseSummary = "Expense Summary",
-                Comments = "Project Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1))
-            };
+            var project = ConvertToProjectFromProjectDto(CreateProjectDto());
+            project.Id = 222; // Set a specific ID for the project
             _context.Project.Add(project);
             _context.SaveChanges();
 
-            var updateProjectDto = new ProjectDto
-            {
-                ShortName = "Updated Project",
-                Focus = "Updated Focus",
-                Scope = "Updated Scope",
-                PricePerUnit = 200.0m,
-                QtyOfUnits = 20,
-                ExpenseBudget = 2000.0m,
-                ExpenseSummary = "Updated Expense Summary",
-                Comments = "Updated Comments",
-                StartDate = DateOnly.FromDateTime(DateTime.Now),
-                EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(2))
-            };
+            var updateProjectDto = CreateProjectDto();
 
             // Act
             var result = await _projectService.UpdateProjectAsync(project.Id, updateProjectDto);
@@ -353,19 +352,6 @@ namespace Video_Project_Suite.Api.Tests.Services
 
         #endregion
 
-        #region GetProjectsByUserNameAsync
-        // True Negative Test: Retrieve projects by username when no projects exist for that user
-
-        // True Positive Test: Retrieve projects by username when projects exist for that user
-
-        #endregion
-
-        #region GetUsersWithRoleAsync
-        // True Negative Test: Retrieve users with a role when no users exist with that role
-
-        // True Positive Test: Retrieve users with a role when users exist with that role
-
-        #endregion
 
     }
 

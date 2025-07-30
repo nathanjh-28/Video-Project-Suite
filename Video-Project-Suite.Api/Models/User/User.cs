@@ -21,7 +21,11 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string Role { get; set; } = string.Empty;
 
-    public string? RefreshToken { get; set; }
+    // list of potential roles on projects
+    public List<string> ProjectRoles { get; set; } = new List<string>();
+
+    public string? RefreshToken
+    { get; set; }
 
     public DateTime? RefreshTokenExpiryTime { get; set; }
 }

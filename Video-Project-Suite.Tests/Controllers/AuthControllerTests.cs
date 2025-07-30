@@ -30,10 +30,38 @@ namespace Video_Project_Suite.Tests.Controllers
 
         public AuthControllerTests(WebApplicationFactory<Program> factory)
         {
-            _factory = factory;
+            var dbName = $"TestDb_{Guid.NewGuid()}";
+            _factory = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    // Remove the existing AppDbContext registration
+                    var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+                    // Add the in-memory database for testing
+                    services.AddDbContext<AppDbContext>(options =>
+                    {
+                        options.UseInMemoryDatabase(dbName);
+                    });
+                });
+            });
             _client = _factory.CreateClient();
         }
 
+        private async Task ClearDatabaseAsync()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Clear the database
+            context.User.RemoveRange(context.User);
+            context.Project.RemoveRange(context.Project);
+            await context.SaveChangesAsync();
+        }
 
 
         private static StringContent CreateJsonContent(object obj)
@@ -56,6 +84,7 @@ namespace Video_Project_Suite.Tests.Controllers
         private void Dispose()
         {
             _client?.Dispose();
+            _factory?.Dispose();
         }
 
         #region RegisterAsync Tests
@@ -63,6 +92,10 @@ namespace Video_Project_Suite.Tests.Controllers
         public async Task Register_ValidUser_ReturnsOkWithUser()
         {
             // Arrange
+            await ClearDatabaseAsync();
+            using var scope = _factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
             var request = new RegisterUserDto
             {
                 Username = $"testuser_{Guid.NewGuid():N}",
@@ -108,22 +141,40 @@ namespace Video_Project_Suite.Tests.Controllers
         public async Task Register_DuplicateUser_ReturnsError()
         {
             // Arrange - Use same unique data for both requests
-            var uniqueId = Guid.NewGuid().ToString("N")[..8];
+            await ClearDatabaseAsync();
             var request = new RegisterUserDto
             {
-                Username = $"duplicate_{uniqueId}",
-                Email = $"duplicate_{uniqueId}@email.com",
+                Username = "duplicate_user",
+                Email = "duplicate_user@email.com",
                 Password = "StrongPassword123",
                 FirstName = "Test",
                 LastName = "User"
             };
-            var content = CreateJsonContent(request);
+            var content1 = CreateJsonContent(request);
+            var content2 = CreateJsonContent(request);
 
             // Act - Register first time (should succeed)
-            var firstResponse = await _client.PostAsync($"{_baseUrl}/register", content);
+            var firstResponse = await _client.PostAsync($"{_baseUrl}/register", content1);
+
+            // debug statements
+            // After first registration, check if user exists in database
+            // using var checkScope = _factory.Services.CreateScope();
+            // var checkContext = checkScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            // var userCount = await checkContext.User.CountAsync();
+            // var existingUser = await checkContext.User.FirstOrDefaultAsync(u => u.Username == request.Username);
+            // System.Console.WriteLine($"Users in database: {userCount}");
+            // System.Console.WriteLine($"User exists: {existingUser != null}");
 
             // Act - Register second time (should fail)
-            var secondResponse = await _client.PostAsync($"{_baseUrl}/register", content);
+            var secondResponse = await _client.PostAsync($"{_baseUrl}/register", content2);
+
+            // Debug: Print the actual response
+            var firstResponseContent = await firstResponse.Content.ReadAsStringAsync();
+            var secondResponseContent = await secondResponse.Content.ReadAsStringAsync();
+            System.Console.WriteLine($"First Response Status Code: {firstResponse.StatusCode}");
+            System.Console.WriteLine($"First Response Content: {firstResponseContent}");
+            System.Console.WriteLine($"Second Response Status Code: {secondResponse.StatusCode}");
+            System.Console.WriteLine($"Second Response Content: {secondResponseContent}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
@@ -142,11 +193,14 @@ namespace Video_Project_Suite.Tests.Controllers
         public async Task Login_ValidCredentials_ReturnsOkWithToken()
         {
             // Arrange - First register a user
-            var uniqueId = Guid.NewGuid().ToString("N")[..8];
+            await ClearDatabaseAsync();
+            using var scope = _factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            // var uniqueId = Guid.NewGuid().ToString("N")[..8];
             var registerRequest = new RegisterUserDto
             {
-                Username = $"testuser_{uniqueId}",
-                Email = $"testuser_{uniqueId}@email.com",
+                Username = "testuser",
+                Email = "testuser@email.com",
                 Password = "StrongPassword123",
                 FirstName = "Test",
                 LastName = "User"
@@ -185,6 +239,10 @@ namespace Video_Project_Suite.Tests.Controllers
         public async Task Login_InvalidUsername_ReturnsBadRequest()
         {
             // Arrange - Create login request with username that doesn't exist
+            await ClearDatabaseAsync();
+            using var scope = _factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
             var loginRequest = new UserDto
             {
                 Username = $"nonexistent_user_{Guid.NewGuid().ToString("N")[..8]}",
@@ -209,6 +267,9 @@ namespace Video_Project_Suite.Tests.Controllers
             // Login with existing username but wrong password
 
 
+            await ClearDatabaseAsync();
+            using var scope = _factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             // Arrange - First register a user
             var uniqueId = Guid.NewGuid().ToString("N")[..8];
             var registerRequest = new RegisterUserDto
@@ -282,6 +343,42 @@ namespace Video_Project_Suite.Tests.Controllers
         // }
 
         #endregion
+
+        [Fact]
+        public async Task Diagnostic_SameDbContextAcrossRequests()
+        {
+            // Clear and add a user directly to the database
+            await ClearDatabaseAsync();
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                context.User.Add(new User
+                {
+                    Username = "diagnostic_user",
+                    Email = "diagnostic@test.com",
+                    // ... other required fields
+                });
+                await context.SaveChangesAsync();
+            }
+
+            // Now make an HTTP request that should see this user
+            var loginRequest = new UserDto
+            {
+                Username = "diagnostic_user",
+                Password = "any_password"
+            };
+            var content = CreateJsonContent(loginRequest);
+            var response = await _client.PostAsync($"{_baseUrl}/login", content);
+
+            // Check if the controller can see the user we just added
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var userCount = await context.User.CountAsync();
+                System.Console.WriteLine($"Users in database: {userCount}");
+            }
+        }
 
     }
 

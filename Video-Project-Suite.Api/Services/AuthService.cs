@@ -186,7 +186,8 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     // Get Users with a specific role
     public async Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName)
     {
-        return await context.User.Where(u => u.Role == roleName).ToListAsync();
+        // search ProjectRoles list for roleName
+        return await context.User.Where(u => u.ProjectRoles.Contains(roleName)).ToListAsync();
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -33,6 +33,9 @@ namespace Video_Project_Suite.Tests.Controllers
         {
             // how do we set up the in memory test sqlite database?
             // This is a workaround to use the same factory for all tests
+
+            var dbName = $"TestDb_{Guid.NewGuid()}";
+
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
@@ -47,7 +50,7 @@ namespace Video_Project_Suite.Tests.Controllers
                     // Add the in-memory database for testing
                     services.AddDbContext<AppDbContext>(options =>
                     {
-                        options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}");
+                        options.UseInMemoryDatabase(dbName);
                     });
                 });
             });
