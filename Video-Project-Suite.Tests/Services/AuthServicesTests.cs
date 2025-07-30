@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Video_Project_Suite.Api.Data;
 using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Models.Dto;
+using Video_Project_Suite.Api.Models.Project;
 using Video_Project_Suite.Api.Services;
 using Xunit;
 

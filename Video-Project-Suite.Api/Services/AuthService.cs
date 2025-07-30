@@ -132,6 +132,64 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
         return user;
     }
 
+
+    // delete account
+    public async Task<User?> DeleteAccountAsync(int userId)
+    {
+        var user = await context.User.FindAsync(userId);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+
+        context.User.Remove(user);
+        await context.SaveChangesAsync();
+        return user; // User deleted successfully
+    }
+
+    // Get all Users
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        return await context.User.ToListAsync();
+    }
+
+    // Get a user by ID
+    public async Task<User?> GetUserByIdAsync(int userId)
+    {
+        var user = await context.User.FindAsync(userId);
+        if (user == null)
+        {
+            return null; // User not found
+        }
+        return user; // Return the found user
+    }
+
+    // Update User Account
+    public async Task<User?> UpdateUserAsync(int userId, RegisterUserDto user)
+    {
+        var existingUser = await context.User.FindAsync(userId);
+        if (existingUser == null)
+        {
+            return null; // User not found
+        }
+
+        existingUser.Username = user.Username;
+        existingUser.Email = user.Email;
+        existingUser.FirstName = user.FirstName;
+        existingUser.LastName = user.LastName;
+
+        context.User.Update(existingUser);
+        await context.SaveChangesAsync();
+        return existingUser; // Return the updated user
+    }
+
+    // Get Users with a specific role
+    public async Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName)
+    {
+        // search ProjectRoles list for roleName
+        return await context.User.Where(u => u.ProjectRoles.Contains(roleName)).ToListAsync();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     //
     // Helper methods

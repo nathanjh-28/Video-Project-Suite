@@ -65,3 +65,6 @@ current-tasks.md
 *.sqlite3
 
 *.sql
+
+*shm
+*wal

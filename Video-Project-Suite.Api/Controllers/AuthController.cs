@@ -83,5 +83,61 @@ namespace Video_Project_Suite.Api.Controllers
 
             return Ok(result);
         }
+
+        // delete account
+        [HttpDelete("delete/{userId}")]
+        public async Task<ActionResult<User>> DeleteAccount(int userId)
+        {
+            var result = await authService.DeleteAccountAsync(userId);
+            if (result == null)
+            {
+                return NotFound("User not found.");
+            }
+            return Ok(result);
+        }
+
+        // Get all users
+        [HttpGet("users")]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        {
+            var users = await authService.GetAllUsersAsync();
+            return Ok(users);
+        }
+        // Get user by ID
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<User>> GetUserById(int userId)
+        {
+            var user = await authService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            return Ok(user);
+        }
+
+        // Update User Account
+        [HttpPut("update/{userId}")]
+        public async Task<ActionResult<UserDto>> UpdateUser(int userId, RegisterUserDto request)
+        {
+            var user = await authService.UpdateUserAsync(userId, request);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            var newUserDto = new UserDto
+            {
+                Username = user.Username,
+            };
+            return Ok(newUserDto);
+        }
+
+        // Get Users with a specific role
+        [HttpGet("users/role/{roleName}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByRole(string roleName)
+        {
+            var users = await authService.GetUsersByRoleAsync(roleName);
+            return Ok(users);
+        }
+
     }
 }

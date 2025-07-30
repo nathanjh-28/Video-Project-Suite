@@ -58,6 +58,7 @@ public class Program
 
         // Add Auth Service
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IProjectService, ProjectService>();
 
         // Configure the HTTP request pipeline.
         var app = builder.Build();
