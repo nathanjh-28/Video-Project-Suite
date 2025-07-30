@@ -1,66 +1,48 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Layout from './components/Layout';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetail from './pages/ProjectDetail';
+import ProjectForm from './pages/ProjectForm';
+import UsersPage from './pages/UsersPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import UsersDetail from './pages/UsersDetail';
 
-// we can recreate this test in the console using 
-// fetch('/api/test').then(r => r.json()).then(console.log)
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+  },
+});
 
 function App() {
-  const [apiData, setApiData] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  const testApiConnection = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch('/api/test')
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      setApiData(data)
-    } catch (err) {
-      setError(err.message)
-      console.error('API call failed:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Test connection on component mount
-  useEffect(() => {
-    testApiConnection()
-  }, [])
-
   return (
-    <div className="App">
-      <h1>Video Project Suite</h1>
-      <h2>API Connection Test</h2>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<ProjectsPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/projects/new" element={<ProjectForm />} />
+            <Route path="/projects/:id/edit" element={<ProjectForm />} />
+            <Route path="/users" element={<UsersPage />} />
 
-      <button onClick={testApiConnection} disabled={loading}>
-        {loading ? 'Testing...' : 'Test API Connection'}
-      </button>
+            <Route path="/users/:id" element={<UsersDetail />} />
 
-      {loading && <p>Loading...</p>}
-
-      {error && (
-        <div style={{ color: 'red', marginTop: '10px' }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {apiData && (
-        <div style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0' }}>
-          <h3>✅ API Connected Successfully!</h3>
-          <p><strong>Message:</strong> {apiData.message}</p>
-          <p><strong>Timestamp:</strong> {apiData.timestamp}</p>
-        </div>
-      )}
-    </div>
-  )
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
