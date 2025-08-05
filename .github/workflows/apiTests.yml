@@ -4,9 +4,15 @@ name: API Tests
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
 
     steps:
