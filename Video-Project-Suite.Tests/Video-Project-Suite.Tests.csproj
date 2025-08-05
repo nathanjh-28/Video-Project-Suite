@@ -33,7 +33,7 @@
   </ItemGroup> -->
 
   <ItemGroup>
-    <ProjectReference Include="../Video-Project-Suite.api/Video-Project-Suite.Api.csproj" />
+    <ProjectReference Include="../Video-Project-Suite.Api/Video-Project-Suite.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
