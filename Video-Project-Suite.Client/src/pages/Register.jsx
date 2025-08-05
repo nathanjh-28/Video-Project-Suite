@@ -117,6 +117,16 @@ const Register = () => {
                             <Grid item xs={12} md={6}>
                                 <TextField
                                     fullWidth
+                                    label="Email"
+                                    value={user.email}
+                                    onChange={handleChange('email')}
+                                    type="email"
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
                                     label="First Name"
                                     value={user.firstName}
                                     onChange={handleChange('firstName')}
