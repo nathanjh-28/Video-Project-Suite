@@ -17,9 +17,7 @@ jobs:
           dotnet-version: '8.0.x'
       - name: Restore dependencies
         run: dotnet restore
-      - name: Build API project first
-        run: dotnet build Video-Project-Suite.Api/Video-Project-Suite.Api.csproj --configuration Release --no-restore
-      - name: Build test project
-        run: dotnet build Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --configuration Release --no-restore
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
       - name: Run tests
-        run: dotnet test Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal
