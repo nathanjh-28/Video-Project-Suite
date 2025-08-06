@@ -52,7 +52,6 @@ jobs:
     # This shows us what files are actually in the container and where they're located
     - name: Debug container structure
       run: |
-        docker run --rm --entrypoint="" my-api:test find /source -name "*.csproj" -type f
         docker run --rm --entrypoint="" my-api:test ls -la /
         docker run --rm --entrypoint="" my-api:test ls -la /app
     
