@@ -22,6 +22,9 @@ WORKDIR /app
 # Copy the built app
 COPY --from=build /app .
 
+# Also copy source code for testing
+COPY . /source
+
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 

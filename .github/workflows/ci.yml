@@ -52,9 +52,9 @@ jobs:
     # This shows us what files are actually in the container and where they're located
     - name: Debug container structure
       run: |
-        docker run --rm --entrypoint="" my-api:test ls -la /
-        docker run --rm --entrypoint="" my-api:test ls -la /app
-    
+        docker run --rm --entrypoint="" my-api:test ls -la /source
+        docker run --rm --entrypoint="" my-api:test find /source -name "*.csproj" -type f
+
     # Step 5: Run your tests inside the Docker container
     # Using the correct test project name and working directory
     # --entrypoint="" overrides the default API startup command
@@ -62,24 +62,24 @@ jobs:
     - name: Run tests in container
       run: |
         docker run \
-          --rm \
-          --entrypoint="" \
-          --workdir /app \
-          my-api:test \
-          dotnet test --logger "console;verbosity=detailed"
+        --rm \
+        --entrypoint="" \
+        --workdir /source \
+        my-api:test \
+        dotnet test Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --logger "console;verbosity=detailed"
     
     # Optional Step 5: You could also test that your API actually starts
     # This runs the container in the background, tests a basic endpoint, then stops it
     # Uncomment these lines if you want this additional validation
     - name: Test API startup
       run: |
-        # Start container in background
-        docker run -d --name api-test -p 5001:5000 my-api:test
+        # Start container in background (note: 5001:5001 since container now uses 5001)
+        docker run -d --name api-test -p 5001:5001 my-api:test
         
         # Wait a moment for startup
         sleep 10
         
-        # Test that it responds (replace with your actual endpoint)
+        # Test that it responds
         curl -f http://localhost:5001/api/test || exit 1
         
         # Clean up
