@@ -53,6 +53,8 @@ jobs:
     - name: Debug container structure
       run: |
         docker run --rm --entrypoint="" my-api:test find /source -name "*.csproj" -type f
+        docker run --rm --entrypoint="" my-api:test ls -la /
+        docker run --rm --entrypoint="" my-api:test ls -la /app
     
     # Step 5: Run your tests inside the Docker container
     # Using the correct test project name and working directory
@@ -63,9 +65,9 @@ jobs:
         docker run \
           --rm \
           --entrypoint="" \
-          --workdir /source \
+          --workdir /app \
           my-api:test \
-          dotnet test Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --logger "console;verbosity=detailed"
+          dotnet test --logger "console;verbosity=detailed"
     
     # Optional Step 5: You could also test that your API actually starts
     # This runs the container in the background, tests a basic endpoint, then stops it
