@@ -12,7 +12,7 @@ on:
   # Run on every pull request targeting main
   pull_request:
     branches: [ main, DevOps ]
-
+  
   # Allow manual triggering from GitHub UI (helpful for testing)
   workflow_dispatch:
 
@@ -48,16 +48,24 @@ jobs:
           --tag my-api:test \
           .
     
-    # Step 4: Run your tests inside the Docker container
-    # This creates and starts a container from your image, then runs tests
-    # The container is automatically removed after tests complete
+    # Step 4: Debug container structure (helpful for troubleshooting)
+    # This shows us what files are actually in the container and where they're located
+    - name: Debug container structure
+      run: |
+        docker run --rm --entrypoint="" my-api:test find /source -name "*.csproj" -type f
+    
+    # Step 5: Run your tests inside the Docker container
+    # Using the correct test project name and working directory
+    # --entrypoint="" overrides the default API startup command
+    # --workdir /source is where your source code lives during the build
     - name: Run tests in container
       run: |
         docker run \
           --rm \
-          --workdir /app \
+          --entrypoint="" \
+          --workdir /source \
           my-api:test \
-          dotnet test --logger "console;verbosity=detailed"
+          dotnet test Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --logger "console;verbosity=detailed"
     
     # Optional Step 5: You could also test that your API actually starts
     # This runs the container in the background, tests a basic endpoint, then stops it
