@@ -1,0 +1,78 @@
+# This file goes in: .github/workflows/ci.yml
+
+# Name that appears in the GitHub Actions tab
+name: CI - Build and Test API
+
+# When should this workflow run?
+on:
+  # Run on every push to main branch
+  push:
+    branches: [ main, DevOps ]
+  
+  # Run on every pull request targeting main
+  pull_request:
+    branches: [ main, DevOps ]
+
+  # Allow manual triggering from GitHub UI (helpful for testing)
+  workflow_dispatch:
+
+# Define the job(s) to run
+jobs:
+  # Job name - you can have multiple jobs that run in parallel
+  build-and-test:
+    # What operating system should GitHub provide? 
+    # ubuntu-latest is fast, reliable, and has Docker pre-installed
+    runs-on: ubuntu-latest
+    
+    # The individual steps that make up this job
+    steps:
+    
+    # Step 1: Get your code from the repository
+    # This is like doing 'git clone' - downloads your repo to the GitHub runner
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Step 2: Set up Docker Buildx (advanced Docker building)
+    # This gives us better caching and multi-platform support
+    # Not strictly needed for simple builds, but good practice
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    # Step 3: Build your Docker image using the development target
+    # This is the same as running: docker build --target development -t my-api:dev .
+    # We're using the development target because it has the SDK for running tests
+    - name: Build Docker image
+      run: |
+        docker build \
+          --target development \
+          --tag my-api:test \
+          .
+    
+    # Step 4: Run your tests inside the Docker container
+    # This creates and starts a container from your image, then runs tests
+    # The container is automatically removed after tests complete
+    - name: Run tests in container
+      run: |
+        docker run \
+          --rm \
+          --workdir /app \
+          my-api:test \
+          dotnet test --logger "console;verbosity=detailed"
+    
+    # Optional Step 5: You could also test that your API actually starts
+    # This runs the container in the background, tests a basic endpoint, then stops it
+    # Uncomment these lines if you want this additional validation
+    - name: Test API startup
+      run: |
+        # Start container in background
+        docker run -d --name api-test -p 5001:5000 my-api:test
+        
+        # Wait a moment for startup
+        sleep 10
+        
+        # Test that it responds (replace with your actual endpoint)
+        curl -f http://localhost:5001/api/test || exit 1
+        
+        # Clean up
+        docker stop api-test
+        docker rm api-test
