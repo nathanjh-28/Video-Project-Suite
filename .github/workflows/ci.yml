@@ -85,3 +85,34 @@ jobs:
         # Clean up
         docker stop api-test
         docker rm api-test
+    
+  push-to-registry:
+    needs: build-and-test  # Only run if tests pass
+    runs-on: ubuntu-latest
+        # Only push on main branch (not on PRs)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/DevOps')
+        
+    permissions:
+        contents: read
+        packages: write
+        
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Log in to GitHub Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        
+        - name: Build and push production image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            target: production  # Use production stage
+            push: true
+            tags: |
+                ghcr.io/${{ github.repository }}:latest
+                ghcr.io/${{ github.repository }}:${{ github.sha }}
