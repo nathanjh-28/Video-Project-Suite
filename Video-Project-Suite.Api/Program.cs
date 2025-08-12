@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 
 using Video_Project_Suite.Api.Services;
 using Video_Project_Suite.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Video_Project_Suite.Api;
 
@@ -50,7 +51,12 @@ public class Program
         // builder.Services.AddOpenApi();
 
         // SQLite database for storing user data
-        builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
+        // builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
+
+        // PostgreSQL database for storing user data
+        var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?? builder.Configuration.GetConnectionString("DefaultConnection");
+        builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseNpgsql(connectionString));
 
         // Add authentication Services
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
