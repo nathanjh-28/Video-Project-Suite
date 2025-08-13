@@ -64,7 +64,7 @@ public class Program
         if (string.IsNullOrEmpty(jwtToken))
         {
             // Use a dummy token for testing environments
-            jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-123456789";
+            jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-1234567890ABCDEFGHIJKLMNOP";
             Console.WriteLine("WARNING: Using dummy JWT token - this should only happen in tests");
         }
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
