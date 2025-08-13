@@ -39,7 +39,7 @@ public class Program
         {
             options.AddPolicy("AllowReactApp",
                     builder => builder
-                    .WithOrigins("http://localhost:5173") // React app URL
+                    .WithOrigins("http://localhost:5173", "https://video-project-suite.vercel.app")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
