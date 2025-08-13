@@ -59,6 +59,14 @@ public class Program
                     options.UseNpgsql(connectionString));
 
         // Add authentication Services
+
+        var jwtToken = builder.Configuration["AppSettings:Token"];
+        if (string.IsNullOrEmpty(jwtToken))
+        {
+            // Use a dummy token for testing environments
+            jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-123456789";
+            Console.WriteLine("WARNING: Using dummy JWT token - this should only happen in tests");
+        }
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
         {
             Options.TokenValidationParameters = new TokenValidationParameters
@@ -68,7 +76,7 @@ public class Program
                 ValidateAudience = true,
                 ValidAudience = builder.Configuration["AppSettings:Audience"],
                 ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtToken)),
                 ValidateIssuerSigningKey = true
             };
         });
