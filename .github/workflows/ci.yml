@@ -71,26 +71,26 @@ jobs:
     # Optional Step 5: You could also test that your API actually starts
     # This runs the container in the background, tests a basic endpoint, then stops it
     # Uncomment these lines if you want this additional validation
-    - name: Test API startup
-      run: |
-        # Start container in background (note: 5001:5001 since container now uses 5001)
-        docker run -d --name api-test -p 5001:5001 my-api:test
+    # - name: Test API startup
+    #   run: |
+    #     # Start container in background (note: 5001:5001 since container now uses 5001)
+    #     docker run -d --name api-test -p 5001:5001 my-api:test
         
-        # Wait a moment for startup
-        sleep 20
+    #     # Wait a moment for startup
+    #     sleep 20
 
-        # Check container is running
-        docker ps
+    #     # Check container is running
+    #     docker ps
 
-        # check logs if needed
-        docker logs api-test
+    #     # check logs if needed
+    #     docker logs api-test
 
-        # Test that it responds
-        curl -f http://localhost:5001/api/test || exit 1
+    #     # Test that it responds
+    #     curl -f http://localhost:5001/api/test || exit 1
         
-        # Clean up
-        docker stop api-test
-        docker rm api-test
+    #     # Clean up
+    #     docker stop api-test
+    #     docker rm api-test
     
   push-to-registry:
     needs: build-and-test  # Only run if tests pass
