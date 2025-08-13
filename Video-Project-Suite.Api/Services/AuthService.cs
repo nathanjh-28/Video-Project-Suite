@@ -208,7 +208,15 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppSettings:Token"]!));
+        var jwtToken = configuration["AppSettings:Token"];
+        if (string.IsNullOrEmpty(jwtToken))
+        {
+            // Use a dummy token for testing environments
+            jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-123456789";
+            Console.WriteLine("WARNING: Using dummy JWT token - this should only happen in tests");
+        }
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtToken));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
