@@ -77,8 +77,14 @@ jobs:
         docker run -d --name api-test -p 5001:5001 my-api:test
         
         # Wait a moment for startup
-        sleep 10
-        
+        sleep 20
+
+        # Check container is running
+        docker ps
+
+        # check logs if needed
+        docker logs api-test
+
         # Test that it responds
         curl -f http://localhost:5001/api/test || exit 1
         
