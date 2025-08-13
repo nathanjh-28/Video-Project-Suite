@@ -53,11 +53,25 @@ public class Program
         // SQLite database for storing user data
         // builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
 
-
-
         // PostgreSQL database for storing user data
         var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
         Console.WriteLine($"DATABASE_URL found: {!string.IsNullOrEmpty(connectionString)}");
+
+        // Also check for Render's specific env var name
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString = Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL");
+        }
+
+        Console.WriteLine($"DATABASE_URL found: {!string.IsNullOrEmpty(connectionString)}");
+        Console.WriteLine($"Raw DATABASE_URL length: {connectionString?.Length ?? 0}");
+
+        // Add this to see ALL environment variables (temporarily for debugging)
+        Console.WriteLine("Available environment variables:");
+        foreach (var env in Environment.GetEnvironmentVariables().Keys)
+        {
+            Console.WriteLine($"  - {env}");
+        }
 
         // Convert Render's DATABASE_URL format to Npgsql format
         if (!string.IsNullOrEmpty(connectionString))
