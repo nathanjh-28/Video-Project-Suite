@@ -85,8 +85,11 @@ public class Program
                     var userInfo = uri.UserInfo.Split(':');
                     var database = uri.AbsolutePath.TrimStart('/');
 
+                    // Get port (default to 5432 if not specified)
+                    var port = uri.Port > 0 ? uri.Port : 5432;
+
                     // Build Npgsql connection string
-                    connectionString = $"Host={uri.Host};Port={uri.Port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+                    connectionString = $"Host={uri.Host};Port={port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
                     Console.WriteLine("Converted DATABASE_URL to Npgsql format");
                 }
                 catch (Exception ex)
