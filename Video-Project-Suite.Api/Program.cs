@@ -57,18 +57,39 @@ public class Program
 
         // PostgreSQL database for storing user data
         var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+        Console.WriteLine($"DATABASE_URL found: {!string.IsNullOrEmpty(connectionString)}");
 
         // Convert Render's DATABASE_URL format to Npgsql format
-        if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
+        if (!string.IsNullOrEmpty(connectionString))
         {
-            var uri = new Uri(connectionString.Replace("postgresql://", "postgres://"));
-            var userInfo = uri.UserInfo.Split(':');
-            connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+            if (connectionString.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+            {
+                try
+                {
+                    // Parse the URL
+                    var uri = new Uri(connectionString.Replace("postgresql://", "postgres://"));
+                    var userInfo = uri.UserInfo.Split(':');
+                    var database = uri.AbsolutePath.TrimStart('/');
+
+                    // Build Npgsql connection string
+                    connectionString = $"Host={uri.Host};Port={uri.Port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+                    Console.WriteLine("Converted DATABASE_URL to Npgsql format");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to parse DATABASE_URL: {ex.Message}");
+                    throw;
+                }
+            }
         }
         else
         {
+            // Fallback to config file
             connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine("Using connection string from configuration");
         }
+
+        Console.WriteLine($"Final connection string format: {connectionString?.Substring(0, Math.Min(30, connectionString?.Length ?? 0))}...");
 
 
         builder.Services.AddDbContext<AppDbContext>(options =>
