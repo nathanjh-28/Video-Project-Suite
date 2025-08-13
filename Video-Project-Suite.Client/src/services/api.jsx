@@ -1,5 +1,7 @@
 // src/services/api.js
-const API_BASE_URL = '/api'; // Replace with your API URL
+// const API_BASE_URL = '/api'; // Replace with your API URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 
 // Mock data for development
 const mockProjects = [
