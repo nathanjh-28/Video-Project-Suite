@@ -16,7 +16,7 @@ This application can be generalized to other creative service and/or delivery ba
 Video Project Suite is a modern full stack web application that works in the browser or on mobile devices with responsive web design.  The backend web api is built with .NET Core, the database is a SQL database using PostgreSQL, and the front end web interface is built using React and Material UI.  The application is built to scale using containers, monitoring, CI/CD pipelines, version control branching and robust testing.
 
 #### Profesional Development Course
-Learning .NET Core and building out the first layers of this application with professional technologies and practices in mind was part of my self guided professional development course.  For more information, you can visit my [project blog]({{ site.baseurl }}) where I wrote weekly blog posts on this process as well as my project proposal and other documents. (This overview exists both on the blog and in the github repository for the application).  The first features completed for the professional development were a projects module with user authentication and authorization.
+Learning .NET Core and building out the first layers of this application with professional technologies and practices in mind was part of my self guided professional development course.  For more information, you can visit my [project blog](https://nathanjh-28.github.io/vp-suite-blog/) where I wrote weekly blog posts on this process as well as my project proposal and other documents. (This overview exists both on the blog and in the github repository for the application).  The first features completed for the professional development were a projects module with user authentication and authorization.
 
 #### Why This Project
 This project is important to me because it sits at the intersection of what I want to build and how I want to grow as a developer. It gives me the opportunity to create a real software tool for a small business while expanding my technical skillset in a focused and meaningful way.
@@ -43,7 +43,7 @@ Client users will only have access to the projects assigned to them and interact
 
 Collaborators, such as video editors, will also only see the projects assigned to them in a dedicated collaborator interface.
 
-For more on user stories [click here]({{ site.baseurl }}/design_pages/userstories)
+For more on user stories [click here](https://nathanjh-28.github.io/vp-suite-blog/design_pages/userstories)
 
 ### Features
 
@@ -78,8 +78,6 @@ The Invoice entity will keep track of projects invoice status as well as multipl
 
 Just like with template tasks, template invoices will mirror invoices and link to a project type.
 
-For a detailed list of Features, Epics and Themes [click here]({{ site.baseurl }}/design_pages/features)
-
 ### Views
 Views will be separated out by user privileges and objectives.  The overall style of the application will be clean and minimal and work seamlessly across desktop and mobile devices.  All interfaces maintain a consistent navigation and styling while also optimized for each user's workflow.
 
@@ -91,7 +89,7 @@ Clients will have a sleek dashboard that provides the status of their project at
 
 Video Editors have a productivity style multi projects layout which provides intuitive layout for project status and next steps.
 
-To see wireframes and mock ups [click here]({{ site.baseurl }}/design_pages/views).
+To see wireframes and mock ups [click here](https://nathanjh-28.github.io/vp-suite-blog/design_pages/views).
 
 ### Database Design
 All of the entities required for the project are heavily related and thus a relational database is the obvious choice for persisting data.  This design prioritizes referential integrity and complex quiries for reporting and dashboard views.
@@ -100,9 +98,9 @@ At the heart of the database will be the Project Entity.  Project will be refere
 
 Templating will be implemented by creating template entities that mirror their dedicated entities.
 
-![ER Diagram](../images/erd-version1.png)
+<img src="https://nathanjh-28.github.io/vp-suite-blog/images/erd-version1.png">
 
-For a more detailed database breakdown [click here]({{ site.baseurl }}/design_pages/database_design)
+For a more detailed database breakdown [click here](https://nathanjh-28.github.io/vp-suite-blog/design_pages/database_design)
 
 ### API Endpoints
 The API follows RESTful conventions with standard HTTP methods and uses nested endpoints that reflect data relationships. For example:
@@ -111,19 +109,18 @@ The API follows RESTful conventions with standard HTTP methods and uses nested e
 
 The API will handle user authentication and authorization using JSON web tokens and handle consistent errors and response formats.
 
-For a full list of the API endpoints [click here]({{ site.baseurl }}/api-endpoints)
+For a full list of the API endpoints [click here](https://nathanjh-28.github.io/vp-suite-blog/api-endpoints)
 
 
 ### Testing Strategy
 Utilizing practical test driven development, testing rests on a wide foundation of back end unit tests for the business logic of the application.  Integration tests  cover the API and database functionality as well as user authorization and authentication tests to ensure that a user has access to the proper resources.  Some of the testing frameworks used are xUnit for .NET Core, Jest for React.  Finally, end to end tests will cover complete user workflows.
 
-For a full breakdown of Testing Strategy [click here]({{ site.baseurl }}/testing-strategy)
+
+### Deployment
+Utilizing a Continuous Integration and Delivery Pipeline, the application is deployed and maintained using Docker Containers, GitHub Actions, GitHub Registry, and Render.com.
+
+Upon updates to the remote repository, a GitHub Action is triggered which creates a Docker Container with the application running within it.  All tests run on the application in the container and if they pass a copy of the prebuilt container is stored in GitHub Registry.  For Deployment, Render.com retrieves the prebuilt container and deploys it on their platform.
+
+The React front end application is deployed using Vercel and Vite framework.
 
 
-### Deployment Plan
-
-### Architecture / System Design
-
-### How to use the Application
-
-### Conclusion
