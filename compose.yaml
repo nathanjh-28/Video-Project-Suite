@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Development API
+  api-dev:
+    build:
+      context: .
+      target: development
+    ports:
+      - "5001:5001"
+    volumes:
+      - sqlite_data_dev:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/database.db
+    profiles:
+      - dev
+
+  # Production API
+  api-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - "8080:8080"
+    volumes:
+      - sqlite_data_prod:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/database.db
+    profiles:
+      - prod
+
+volumes:
+  sqlite_data_dev:
+  sqlite_data_prod:

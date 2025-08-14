@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 
 using Video_Project_Suite.Api.Services;
 using Video_Project_Suite.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Video_Project_Suite.Api;
 
@@ -38,7 +39,7 @@ public class Program
         {
             options.AddPolicy("AllowReactApp",
                     builder => builder
-                    .WithOrigins("http://localhost:5173") // React app URL
+                    .WithOrigins("http://localhost:5173", "https://video-project-suite.vercel.app")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
@@ -50,9 +51,76 @@ public class Program
         // builder.Services.AddOpenApi();
 
         // SQLite database for storing user data
-        builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
+        // builder.Services.AddSqlite<AppDbContext>("Data Source=app.db");
+
+        // PostgreSQL database for storing user data
+        var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+        Console.WriteLine($"DATABASE_URL found: {!string.IsNullOrEmpty(connectionString)}");
+
+        // Also check for Render's specific env var name
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString = Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL");
+        }
+
+        Console.WriteLine($"DATABASE_URL found: {!string.IsNullOrEmpty(connectionString)}");
+        Console.WriteLine($"Raw DATABASE_URL length: {connectionString?.Length ?? 0}");
+
+        // Add this to see ALL environment variables (temporarily for debugging)
+        Console.WriteLine("Available environment variables:");
+        foreach (var env in Environment.GetEnvironmentVariables().Keys)
+        {
+            Console.WriteLine($"  - {env}");
+        }
+
+        // Convert Render's DATABASE_URL format to Npgsql format
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            if (connectionString.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+            {
+                try
+                {
+                    // Parse the URL
+                    var uri = new Uri(connectionString.Replace("postgresql://", "postgres://"));
+                    var userInfo = uri.UserInfo.Split(':');
+                    var database = uri.AbsolutePath.TrimStart('/');
+
+                    // Get port (default to 5432 if not specified)
+                    var port = uri.Port > 0 ? uri.Port : 5432;
+
+                    // Build Npgsql connection string
+                    connectionString = $"Host={uri.Host};Port={port};Database={database};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+                    Console.WriteLine("Converted DATABASE_URL to Npgsql format");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to parse DATABASE_URL: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+        else
+        {
+            // Fallback to config file
+            connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine("Using connection string from configuration");
+        }
+
+        Console.WriteLine($"Final connection string format: {connectionString?.Substring(0, Math.Min(30, connectionString?.Length ?? 0))}...");
+
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseNpgsql(connectionString));
 
         // Add authentication Services
+
+        var jwtToken = builder.Configuration["AppSettings:Token"];
+        if (string.IsNullOrEmpty(jwtToken))
+        {
+            // Use a dummy token for testing environments
+            jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-1234567890ABCDEFGHIJKLMNOP";
+            Console.WriteLine("WARNING: Using dummy JWT token - this should only happen in tests");
+        }
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
         {
             Options.TokenValidationParameters = new TokenValidationParameters
@@ -62,7 +130,7 @@ public class Program
                 ValidateAudience = true,
                 ValidAudience = builder.Configuration["AppSettings:Audience"],
                 ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtToken)),
                 ValidateIssuerSigningKey = true
             };
         });

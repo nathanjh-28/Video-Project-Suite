@@ -1,0 +1,128 @@
+# This file goes in: .github/workflows/ci.yml
+
+# Name that appears in the GitHub Actions tab
+name: CI - Build and Test API
+
+# When should this workflow run?
+on:
+  # Run on every push to main branch
+  push:
+    branches: [ main, DevOps ]
+  
+  # Run on every pull request targeting main
+  pull_request:
+    branches: [ main, DevOps ]
+  
+  # Allow manual triggering from GitHub UI (helpful for testing)
+  workflow_dispatch:
+
+# Define the job(s) to run
+jobs:
+  # Job name - you can have multiple jobs that run in parallel
+  build-and-test:
+    # What operating system should GitHub provide? 
+    # ubuntu-latest is fast, reliable, and has Docker pre-installed
+    runs-on: ubuntu-latest
+    
+    # The individual steps that make up this job
+    steps:
+    
+    # Step 1: Get your code from the repository
+    # This is like doing 'git clone' - downloads your repo to the GitHub runner
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Step 2: Set up Docker Buildx (advanced Docker building)
+    # This gives us better caching and multi-platform support
+    # Not strictly needed for simple builds, but good practice
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    # Step 3: Build your Docker image using the development target
+    # This is the same as running: docker build --target development -t my-api:dev .
+    # We're using the development target because it has the SDK for running tests
+    - name: Build Docker image
+      run: |
+        docker build \
+          --target development \
+          --tag my-api:test \
+          .
+    
+    # Step 4: Debug container structure (helpful for troubleshooting)
+    # This shows us what files are actually in the container and where they're located
+    - name: Debug container structure
+      run: |
+        docker run --rm --entrypoint="" my-api:test ls -la /source
+        docker run --rm --entrypoint="" my-api:test find /source -name "*.csproj" -type f
+
+    # Step 5: Run your tests inside the Docker container
+    # Using the correct test project name and working directory
+    # --entrypoint="" overrides the default API startup command
+    # --workdir /source is where your source code lives during the build
+    - name: Run tests in container
+      run: |
+        docker run \
+        --rm \
+        --entrypoint="" \
+        --workdir /source \
+        my-api:test \
+        dotnet test Video-Project-Suite.Tests/Video-Project-Suite.Tests.csproj --logger "console;verbosity=detailed"
+    
+    # Optional Step 5: You could also test that your API actually starts
+    # This runs the container in the background, tests a basic endpoint, then stops it
+    # Uncomment these lines if you want this additional validation
+    # - name: Test API startup
+    #   run: |
+    #     # Start container in background (note: 5001:5001 since container now uses 5001)
+    #     docker run -d --name api-test -p 5001:5001 my-api:test
+        
+    #     # Wait a moment for startup
+    #     sleep 20
+
+    #     # Check container is running
+    #     docker ps
+
+    #     # check logs if needed
+    #     docker logs api-test
+
+    #     # Test that it responds
+    #     curl -f http://localhost:5001/api/test || exit 1
+        
+    #     # Clean up
+    #     docker stop api-test
+    #     docker rm api-test
+    
+  push-to-registry:
+    needs: build-and-test  # Only run if tests pass
+    runs-on: ubuntu-latest
+        # Only push on main branch (not on PRs)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/DevOps')
+        
+    permissions:
+        contents: read
+        packages: write
+        
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Log in to GitHub Container Registry
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Convert repository name to lowercase
+          id: repo
+          run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+        
+        - name: Build and push production image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            target: production  # Use production stage
+            push: true
+            tags: |
+                ghcr.io/${{ steps.repo.outputs.name }}:latest
+                ghcr.io/${{ steps.repo.outputs.name }}:${{ github.sha }}
