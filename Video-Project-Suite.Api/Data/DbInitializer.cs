@@ -4,6 +4,9 @@ using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Models.Dto;
 using Video_Project_Suite.Api.Models.Project;
 
+using Video_Project_Suite.Api.Models.User;
+
+
 namespace Video_Project_Suite.Api.Data;
 
 // DbInitializer.cs

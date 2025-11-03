@@ -18,6 +18,7 @@ using Video_Project_Suite.Api.Data;
 using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Models.Dto;
 using Video_Project_Suite.Api.Models.Project;
+using Video_Project_Suite.Api.Models.User;
 using Xunit;
 
 namespace Video_Project_Suite.Tests.Controllers
@@ -86,6 +87,7 @@ namespace Video_Project_Suite.Tests.Controllers
             });
         }
 
+        [Fact]
         public void Dispose()
         {
             _client?.Dispose();

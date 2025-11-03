@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UserModel = Video_Project_Suite.Api.Models.User;
 
 // add restrictions to properties
 using System.ComponentModel.DataAnnotations;
@@ -58,4 +60,10 @@ public class Project
 
     // Users associated with project
     // this will be a join table in the database
+
+    // Skip Navigation for convenience
+    public List<UserModel.User> Users { get; set; } = new List<UserModel.User>();
+
+    // Direct Access to assignments
+    public List<UserProject.UserProject> Assignments { get; set; } = new List<UserProject.UserProject>();
 }

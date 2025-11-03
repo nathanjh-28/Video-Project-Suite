@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
+using ProjectModel = Video_Project_Suite.Api.Models.Project;
 
-namespace Video_Project_Suite.Api.Models;
+namespace Video_Project_Suite.Api.Models.User;
 
 // User.cs
 //
@@ -28,4 +30,11 @@ public class User
     { get; set; }
 
     public DateTime? RefreshTokenExpiryTime { get; set; }
+
+
+    // Skip Navigation for convenience
+    public List<ProjectModel.Project> Projects { get; set; } = new List<ProjectModel.Project>();
+
+    // Direct Access to assignments
+    public List<UserProject.UserProject> Assignments { get; set; } = new List<UserProject.UserProject>();
 }
