@@ -150,20 +150,40 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     }
 
     // Get all Users
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserDetailDto>> GetAllUsersAsync()
     {
-        return await context.User.ToListAsync();
+        return await context.User.Select(u => new UserDetailDto
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            CreatedAt = u.CreatedAt,
+            Role = u.Role,
+            ProjectRoles = u.ProjectRoles
+        }).ToListAsync();
     }
 
     // Get a user by ID
-    public async Task<User?> GetUserByIdAsync(int userId)
+    public async Task<UserDetailDto?> GetUserByIdAsync(int userId)
     {
         var user = await context.User.FindAsync(userId);
         if (user == null)
         {
             return null; // User not found
         }
-        return user; // Return the found user
+        return new UserDetailDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            CreatedAt = user.CreatedAt,
+            Role = user.Role,
+            ProjectRoles = user.ProjectRoles
+        };
     }
 
     // Update User Account
@@ -226,7 +246,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             issuer: configuration["AppSettings:Issuer"],
             audience: configuration["AppSettings:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: creds
         );
 
@@ -252,7 +272,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     {
         var refreshToken = GenerateRefreshToken();
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
         await context.SaveChangesAsync();
         return refreshToken;
 
@@ -262,7 +282,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     private async Task<User?> ValidateRefreshToken(int userId, string refreshToken)
     {
         var user = await context.User.FindAsync(userId);
-        if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime < DateTime.Now)
+        if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime < DateTime.UtcNow)
         {
             return null; // Invalid refresh token
         }

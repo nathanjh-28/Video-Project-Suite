@@ -14,7 +14,7 @@ import {
 
 
 import { useParams, useNavigate } from 'react-router-dom';
-// import { projectApi } from '../services/api';
+import { userApi } from '../services/api';
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -46,6 +46,15 @@ const Register = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        userApi.register(user)
+            .then(() => {
+                alert('Registration successful!');
+                navigate('/login');
+            })
+            .catch((error) => {
+                console.error('Registration failed:', error);
+                alert('Registration failed. Please try again.');
+            });
     };
 
     const roleOptions = [
@@ -141,6 +150,16 @@ const Register = () => {
                                     onChange={handleChange('lastName')}
                                     required
                                 />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                >
+                                    Register
+                                </Button>
                             </Grid>
                         </Grid>
                     </form>

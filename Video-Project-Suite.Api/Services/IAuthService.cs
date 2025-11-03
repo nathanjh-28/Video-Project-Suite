@@ -32,10 +32,10 @@ public interface IAuthService
     Task<User?> DeleteAccountAsync(int userId);
 
     // Get all Users
-    Task<IEnumerable<User>> GetAllUsersAsync();
+    Task<IEnumerable<UserDetailDto>> GetAllUsersAsync();
 
     // Get a user by ID
-    Task<User?> GetUserByIdAsync(int userId);
+    Task<UserDetailDto?> GetUserByIdAsync(int userId);
 
     // Update User Account
     Task<User?> UpdateUserAsync(int userId, RegisterUserDto user);

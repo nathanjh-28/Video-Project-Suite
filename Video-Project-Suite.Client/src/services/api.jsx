@@ -173,3 +173,94 @@ export const projectApi = {
         }
     }
 };
+
+// User Api
+
+export const userApi = {
+    getAll: async () => {
+        try {
+            return await apiCall('/Auth/users');
+        } catch (error) {
+            console.error('Failed to fetch users:', error);
+            throw error;
+        }
+    },
+
+    getById: async (id) => {
+        try {
+            return await apiCall(`/Auth/user/${id}`);
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+            throw error;
+        }
+    },
+
+    update: async (id, userData) => {
+        try {
+            return await apiCall(`/Auth/update/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(userData),
+            });
+        } catch (error) {
+            console.error('Failed to update user:', error);
+            throw error;
+        }
+    },
+
+    delete: async (id) => {
+        try {
+            await apiCall(`/Auth/delete/${id}`, { method: 'DELETE' });
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+            throw error;
+        }
+    },
+
+    register: async (userData) => {
+        try {
+            return await apiCall('/Auth/register', {
+                method: 'POST',
+                body: JSON.stringify(userData),
+            });
+        } catch (error) {
+            console.error('Failed to register user:', error);
+            throw error;
+        }
+    },
+
+    login: async (credentials) => {
+        try {
+            return await apiCall('/Auth/login', {
+                method: 'POST',
+                body: JSON.stringify(credentials),
+            });
+        } catch (error) {
+            console.error('Failed to login user:', error);
+            throw error;
+        }
+    },
+
+    changePassword: async (passwordData) => {
+        try {
+            return await apiCall(`/Auth/change-password`, {
+                method: 'POST',
+                body: JSON.stringify(passwordData),
+            });
+        } catch (error) {
+            console.error('Failed to change password:', error);
+            throw error;
+        }
+    },
+
+    changeUserRole: async (roleData) => {
+        try {
+            return await apiCall(`/Auth/alter-user-role`, {
+                method: 'POST',
+                body: JSON.stringify(roleData),
+            });
+        } catch (error) {
+            console.error('Failed to change user role:', error);
+            throw error;
+        }
+    }
+};

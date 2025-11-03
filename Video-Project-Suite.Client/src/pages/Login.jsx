@@ -14,6 +14,7 @@ import {
 
 
 import { useParams, useNavigate } from 'react-router-dom';
+import { userApi } from '../services/api';
 // import { projectApi } from '../services/api';
 
 
@@ -47,6 +48,15 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        userApi.login(user)
+            .then(() => {
+                alert('Login successful!');
+                navigate('/');
+            })
+            .catch((error) => {
+                console.error('Login failed:', error);
+                alert('Login failed. Please try again.');
+            });
     };
 
     const roleOptions = [
@@ -87,6 +97,17 @@ const Login = () => {
                                     type="password"
                                     required
                                 />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    fullWidth
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Logging in...' : 'Login'}
+                                </Button>
                             </Grid>
                         </Grid>
                     </form>

@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { PersonAdd, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-// import { userApi } from '../services/api';
+import { userApi } from '../services/api';
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -31,13 +31,15 @@ const UsersPage = () => {
     const loadUsers = async () => {
         try {
             // Replace with actual API call
-            const mockUsers = [
-                { id: 1, userName: 'jd1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
-                { id: 2, userName: 'jane9', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'Producer', status: 'Active' },
-                { id: 3, userName: 'bobj5', firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', role: 'Client', status: 'Active' },
-                { id: 4, userName: 'steve7', firstName: 'Steve', lastName: 'Martin', email: 'steve@example.com', role: 'Editor', status: 'Active' }
-            ];
-            setUsers(mockUsers);
+            // const mockUsers = [
+            //     { id: 1, userName: 'jd1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
+            //     { id: 2, userName: 'jane9', firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com', role: 'Producer', status: 'Active' },
+            //     { id: 3, userName: 'bobj5', firstName: 'Bob', lastName: 'Johnson', email: 'bob@example.com', role: 'Client', status: 'Active' },
+            //     { id: 4, userName: 'steve7', firstName: 'Steve', lastName: 'Martin', email: 'steve@example.com', role: 'Editor', status: 'Active' }
+            // ];
+            const data = await userApi.getAll();
+            setUsers(data);
+            console.log("Loaded users:", data);
         } catch (error) {
             console.error('Failed to load users:', error);
         }
@@ -82,7 +84,7 @@ const UsersPage = () => {
                             <TableRow key={user.id} hover onClick={() => navigate(`/users/${user.id}`)}>
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {user.userName}
+                                        {user.username}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
@@ -103,7 +105,7 @@ const UsersPage = () => {
                                 <TableCell>
                                     <Chip
                                         label={user.role}
-                                        color={user.role === 'Admin' ? 'primary' : 'default'}
+                                        color={user.role === 'admin' ? 'primary' : 'default'}
                                         size="small"
                                     />
                                 </TableCell>

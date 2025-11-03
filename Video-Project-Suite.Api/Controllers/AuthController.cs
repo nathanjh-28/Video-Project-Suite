@@ -100,14 +100,14 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Get all users
         [HttpGet("users")]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserDetailDto>>> GetAllUsers()
         {
             var users = await authService.GetAllUsersAsync();
             return Ok(users);
         }
         // Get user by ID
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<User>> GetUserById(int userId)
+        public async Task<ActionResult<UserDetailDto>> GetUserById(int userId)
         {
             var user = await authService.GetUserByIdAsync(userId);
             if (user == null)
