@@ -11,6 +11,7 @@ using Video_Project_Suite.Api.Data;
 using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Models.Dto;
 using Video_Project_Suite.Api.Models.Project;
+using Video_Project_Suite.Api.Models.User;
 using Video_Project_Suite.Api.Services;
 using Xunit;
 

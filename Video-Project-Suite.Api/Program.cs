@@ -34,6 +34,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
 
+
         // Add Cors
         builder.Services.AddCors(options =>
         {
@@ -138,6 +139,7 @@ public class Program
         // Add Auth Service
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IProjectService, ProjectService>();
+        builder.Services.AddScoped<IUserProjectService, UserProjectService>();
 
         // Configure the HTTP request pipeline.
         var app = builder.Build();

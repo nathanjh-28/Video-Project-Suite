@@ -18,6 +18,8 @@ using Video_Project_Suite.Api.Data;
 using Video_Project_Suite.Api.Models;
 using Video_Project_Suite.Api.Models.Dto;
 using Xunit;
+using Video_Project_Suite.Api.Models.User;
+
 
 namespace Video_Project_Suite.Tests.Controllers
 {

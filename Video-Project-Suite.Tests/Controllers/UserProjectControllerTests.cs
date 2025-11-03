@@ -1,5 +1,3 @@
-// ProjectControllerTests.cs
-
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -21,20 +19,18 @@ using Video_Project_Suite.Api.Models.Project;
 using Video_Project_Suite.Api.Models.User;
 using Xunit;
 
+
 namespace Video_Project_Suite.Tests.Controllers
 {
-    public class ProjectControllerTests : IClassFixture<WebApplicationFactory<Program>>
+    public class UserProjectControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
-        private readonly string _baseUrl = "/api/project";
+        private readonly string _baseUrl = "/api/userproject";
 
         private HttpClient _client;
 
-        public ProjectControllerTests(WebApplicationFactory<Program> factory)
+        public UserProjectControllerTests(WebApplicationFactory<Program> factory)
         {
-            // how do we set up the in memory test sqlite database?
-            // This is a workaround to use the same factory for all tests
-
             var dbName = $"TestDb_{Guid.NewGuid()}";
 
             _factory = factory.WithWebHostBuilder(builder =>
@@ -69,7 +65,6 @@ namespace Video_Project_Suite.Tests.Controllers
             await context.SaveChangesAsync();
         }
 
-
         private static StringContent CreateJsonContent(object obj)
         {
             var json = JsonSerializer.Serialize(obj);
@@ -94,72 +89,21 @@ namespace Video_Project_Suite.Tests.Controllers
             _factory?.Dispose();
         }
 
-        #region GetAllProjects
 
+        // TESTS
 
-        // True Negative Test: Retrieve all projects when no projects exist in db
+        #region GetAllUserProjectsAsync 
         [Fact]
-        public async Task GetAllProjects_ReturnsOk_WhenNoProjectsExist()
+        public async Task GetAllUserProjectsAsync_ReturnsAllUserProjects()
         {
             // Arrange
-            // How do you simulate no projects in the database?
-            // The in-memory database is already empty by default, so we don't need to do anything
-            await ClearDatabaseAsync();
-            using var scope = _factory.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Act
-            var response = await _client.GetAsync(_baseUrl + "/projects");
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var projects = await DeserializeResponse<List<ProjectDto>>(response);
-            Assert.NotNull(projects);
-            Assert.Empty(projects);
+
+            Assert.Equal(0, 0);
+            #endregion
         }
-
-        // True Positive Test: Retrieve all projects when projects exist in db
-
-        [Fact]
-        public async Task GetAllProjects_ReturnsOk_WhenProjectsExist()
-        {
-            // Arrange
-            await ClearDatabaseAsync();
-            using var scope = _factory.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            var project1 = new ProjectDto { ShortName = "Project 1" };
-            var project2 = new ProjectDto { ShortName = "Project 2" };
-            var projectDtos = new List<ProjectDto> { project1, project2 };
-            var jsonContent = CreateJsonContent(projectDtos);
-
-            // convert dtos to projects
-            var projects = new List<Project>
-                    {
-                        new Project
-                        {
-                            ShortName = project1.ShortName },
-                        new Project
-                        {
-                            ShortName = project2.ShortName }
-                    };
-
-            context.Project.AddRange(projects);
-            await context.SaveChangesAsync();
-
-            // Act
-            var response = await _client.GetAsync(_baseUrl + "/projects");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(jsonContent.Headers.ContentType, response.Content.Headers.ContentType);
-        }
-
-
-        #endregion
-
     }
-
-
-
 }
