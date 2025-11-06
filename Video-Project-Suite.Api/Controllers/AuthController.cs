@@ -32,7 +32,7 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Login an existing user
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
+        public async Task<ActionResult> Login(UserDto request)
         {
             var result = await authService.LoginAsync(request);
             if (result == null)
@@ -40,11 +40,21 @@ namespace Video_Project_Suite.Api.Controllers
                 return BadRequest("Invalid username or password");
             }
 
-            return Ok(result);
+            authService.SetTokensInsideCookie(result, HttpContext);
+            return Ok();
         }
 
         // Logout an existing user
-        // could implement a blackout list of tokens
+
+        [HttpPost("logout")]
+        public ActionResult Logout()
+        {
+            // Clear the authentication cookies
+            HttpContext.Response.Cookies.Delete("accessToken");
+            HttpContext.Response.Cookies.Delete("refreshToken");
+
+            return Ok();
+        }
 
         // Change Password Route
         [Authorize]
@@ -77,13 +87,28 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Refresh Tokens Route
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        public async Task<ActionResult> RefreshToken()
         {
+            HttpContext.Request.Cookies.TryGetValue("accessToken", out var accessToken);
+            HttpContext.Request.Cookies.TryGetValue("refreshToken", out var refreshToken);
+
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+            {
+                return BadRequest("Tokens are missing.");
+            }
+
+            var request = new TokenResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
+
             var result = await authService.RefreshTokensAsync(request);
             if (result is null || result.AccessToken is null || result.RefreshToken is null)
                 return Unauthorized("Invalid refresh token.");
 
-            return Ok(result);
+            authService.SetTokensInsideCookie(result, HttpContext);
+            return Ok();
         }
 
         // delete account

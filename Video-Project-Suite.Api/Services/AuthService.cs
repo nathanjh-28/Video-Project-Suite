@@ -87,9 +87,11 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     // Refresh Tokens
 
     // This method is used to refresh the access token using the refresh token.
-    public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
+    public async Task<TokenResponseDto?> RefreshTokensAsync(TokenResponseDto request)
     {
-        var user = await ValidateRefreshToken(request.UserId, request.RefreshToken);
+        // get user id from refresh token
+
+        var user = await context.User.FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
         if (user == null)
         {
             return null; // Invalid refresh token
@@ -246,7 +248,7 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             issuer: configuration["AppSettings:Issuer"],
             audience: configuration["AppSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(1),
+            expires: DateTime.UtcNow.AddMinutes(1),
             signingCredentials: creds
         );
 
@@ -258,6 +260,8 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
     // This method generates a new refresh token.
     private string GenerateRefreshToken()
     {
+        // how do you add a claim to the refresh token to include the user ID?
+
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
         {
@@ -304,6 +308,28 @@ public class AuthService(AppDbContext context, IConfiguration configuration) : I
             RefreshToken = await GenerateandSaveRefreshToken(user)
         };
         return response;
+    }
+
+    public void SetTokensInsideCookie(TokenResponseDto tokenResponse, HttpContext context)
+    {
+        context.Response.Cookies.Append("accessToken", tokenResponse.AccessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            IsEssential = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+        });
+
+        context.Response.Cookies.Append("refreshToken", tokenResponse.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UtcNow.AddDays(7),
+            IsEssential = true
+
+        });
     }
 
 }
