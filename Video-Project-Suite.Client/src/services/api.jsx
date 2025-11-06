@@ -71,6 +71,7 @@ const apiCall = async (endpoint, options = {}) => {
     console.log(`API Call: ${API_BASE_URL}${endpoint}`, options);
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            credentials: 'include', // Include cookies in requests
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers,
@@ -177,6 +178,25 @@ export const projectApi = {
 // User Api
 
 export const userApi = {
+
+    isLoggedIn: async () => {
+        try {
+            // Use fetch directly to check status code without throwing on 401
+            const response = await fetch(`${API_BASE_URL}/Test/secure`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // Important for sending cookies
+            });
+
+            // Return true only if we get a successful response (200-299)
+            return response.ok;
+        } catch (error) {
+            console.error('Failed to check login status:', error);
+            return false;
+        }
+    },
+
     getAll: async () => {
         try {
             return await apiCall('/Auth/users');
@@ -236,6 +256,17 @@ export const userApi = {
             });
         } catch (error) {
             console.error('Failed to login user:', error);
+            throw error;
+        }
+    },
+
+    logout: async () => {
+        try {
+            return await apiCall('/Auth/logout', {
+                method: 'POST',
+            });
+        } catch (error) {
+            console.error('Failed to logout user:', error);
             throw error;
         }
     },

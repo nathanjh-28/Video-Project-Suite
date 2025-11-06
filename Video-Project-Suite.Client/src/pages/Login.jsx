@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Card,
@@ -6,19 +6,17 @@ import {
     TextField,
     Button,
     Grid,
-    MenuItem,
-    Typography,
-    Breadcrumbs,
-    Link
+    Typography
 } from '@mui/material';
 
 
-import { useParams, useNavigate } from 'react-router-dom';
-import { userApi } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 // import { projectApi } from '../services/api';
 
 
 const Login = () => {
+    const { login } = useAuth();
     const [user, setUser] = useState({
         username: '',
         password: '',
@@ -29,15 +27,7 @@ const Login = () => {
         role: '',
     });
     const [loading, setLoading] = useState(false);
-    const { id } = useParams();
     const navigate = useNavigate();
-    const isEditing = Boolean(id);
-
-    useEffect(() => {
-        if (isEditing) {
-            loadProject();
-        }
-    }, [id, isEditing]);
 
     const handleChange = (field) => (event) => {
         setUser(prev => ({
@@ -48,24 +38,18 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        userApi.login(user)
-            .then(() => {
-                alert('Login successful!');
-                navigate('/');
-            })
-            .catch((error) => {
-                console.error('Login failed:', error);
-                alert('Login failed. Please try again.');
-            });
+        setLoading(true);
+        try {
+            await login(user);
+            alert('Login successful!');
+            navigate('/');
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
-
-    const roleOptions = [
-        'Producer',
-        'Client',
-        'Editor',
-        'N/A'
-    ];
-
 
     return (
 
