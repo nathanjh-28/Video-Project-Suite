@@ -14,7 +14,7 @@ import {
 
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { userApi } from '../services/api';
+import { userApi } from '../services';
 
 const Register = () => {
     const [user, setUser] = useState({

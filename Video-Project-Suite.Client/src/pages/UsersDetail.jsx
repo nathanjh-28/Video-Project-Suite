@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { userApi } from '../services/api';
+import { userApi } from '../services';
 
 
 const UsersDetail = () => {

@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { PersonAdd, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { userApi } from '../services/api';
+import { userApi } from '../services';
 
 const UsersPage = () => {
     const [users, setUsers] = useState([]);

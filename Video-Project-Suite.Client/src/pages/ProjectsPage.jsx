@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { projectApi } from '../services/api';
+import { projectApi } from '../services';
 
 const ProjectsPage = () => {
     const [projects, setProjects] = useState([]);

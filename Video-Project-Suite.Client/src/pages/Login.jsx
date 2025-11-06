@@ -12,8 +12,6 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-// import { projectApi } from '../services/api';
-
 
 const Login = () => {
     const { login } = useAuth();
