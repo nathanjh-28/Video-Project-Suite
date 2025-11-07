@@ -49,6 +49,7 @@ const ProjectForm = () => {
         try {
             const data = await projectApi.getById(id);
             setProject(data);
+            console.log("project data:\n", data);
         } catch (error) {
             console.error('Failed to load project:', error);
         }

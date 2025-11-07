@@ -6,7 +6,7 @@ namespace Video_Project_Suite.Api.Services;
 public interface IUserProjectService
 {
     // Get all User Projects
-    Task<IEnumerable<UserProject>> GetAllUserProjects();
+    Task<IEnumerable<UserProjectGetDto>> GetAllUserProjects();
 
     // Get by UserProject ID
     Task<UserProject> GetUserProjectById(int userProjectId);
@@ -21,7 +21,7 @@ public interface IUserProjectService
     Task<UserProjectDto> CreateUserProject(UserProjectDto userProjectDto);
 
     // Update UserProject
-    Task<UserProject?> UpdateUserProject(int userProjectId, UserProject userProject);
+    Task<UserProjectDto?> UpdateUserProject(int userProjectId, UserProjectDto userProjectDto);
 
     // Delete UserProject
     Task<UserProject?> DeleteUserProject(int userProjectId);

@@ -9,10 +9,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetail from './pages/ProjectDetail';
 import ProjectForm from './pages/ProjectForm';
+import UserProjectForm from './pages/UserProjectForm';
 import UsersPage from './pages/UsersPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import UsersDetail from './pages/UsersDetail';
+import UserProjectsPage from './pages/UserProjectsPage';
 
 const theme = createTheme({
   palette: {
@@ -36,6 +38,9 @@ function App() {
 
               {/* Protected routes */}
               <Route path="/" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
+              <Route path="/user-project" element={<ProtectedRoute><UserProjectsPage /></ProtectedRoute>} />
+              <Route path="/user-project/:id/edit" element={<ProtectedRoute><UserProjectForm /></ProtectedRoute>} />
+              <Route path="/userprojects/new" element={<ProtectedRoute><UserProjectForm /></ProtectedRoute>} />
               <Route path="/projects" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
               <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
               <Route path="/projects/new" element={<ProtectedRoute><ProjectForm /></ProtectedRoute>} />

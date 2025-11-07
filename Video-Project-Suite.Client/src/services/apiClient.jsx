@@ -21,7 +21,8 @@ export const apiCall = async (endpoint, options = {}) => {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status} text: ${response.statusText}`);
+
         }
 
         // Only parse JSON if there's content

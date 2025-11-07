@@ -14,7 +14,7 @@ import {
     useMediaQuery,
     useTheme
 } from '@mui/material';
-import { Menu, Work, People } from '@mui/icons-material';
+import { Menu, Work, People, Polyline } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Footer from './Footer';
 import { useAuth } from '../context/AuthContext';
@@ -36,6 +36,7 @@ const Layout = ({ children }) => {
     const menuItems = [
         { text: 'Projects', icon: <Work />, path: '/projects' },
         { text: 'Users', icon: <People />, path: '/users' },
+        { text: 'Project Assignments', icon: <Polyline />, path: '/user-project' },
     ];
 
 
