@@ -3,6 +3,7 @@ import {
     AppBar,
     Box,
     Drawer,
+    Fab,
     IconButton,
     List,
     ListItem,
@@ -23,14 +24,14 @@ const drawerWidth = 240;
 
 const Layout = ({ children }) => {
     const { isLoggedIn, logout } = useAuth();
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(true);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
+        setDrawerOpen(!drawerOpen);
     };
 
     const menuItems = [
@@ -110,8 +111,12 @@ const Layout = ({ children }) => {
             <AppBar
                 position="fixed"
                 sx={{
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
+                    width: drawerOpen ? { sm: `calc(100% - ${drawerWidth}px)` } : '100%',
+                    ml: drawerOpen ? { sm: `${drawerWidth}px` } : 0,
+                    transition: theme.transitions.create(['margin', 'width'], {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.leavingScreen,
+                    }),
                 }}
             >
                 <Toolbar>
@@ -119,23 +124,24 @@ const Layout = ({ children }) => {
                         color="inherit"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        sx={{ mr: 2 }}
                     >
                         <Menu />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        {menuItems.find(item => location.pathname.startsWith(item.path))?.text || ''}
+                        {menuItems.find(item => location.pathname.startsWith(item.path))?.text || 'Projects'}
                     </Typography>
                 </Toolbar>
             </AppBar>
 
             <Box
                 component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+                sx={{ width: drawerOpen ? { sm: drawerWidth } : 0, flexShrink: { sm: 0 } }}
             >
+                {/* Mobile: temporary drawer */}
                 <Drawer
                     variant="temporary"
-                    open={mobileOpen}
+                    open={drawerOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{ keepMounted: true }}
                     sx={{
@@ -145,13 +151,21 @@ const Layout = ({ children }) => {
                 >
                     {drawer}
                 </Drawer>
+                {/* Desktop: persistent drawer */}
                 <Drawer
-                    variant="permanent"
+                    variant="persistent"
                     sx={{
                         display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                        '& .MuiDrawer-paper': {
+                            boxSizing: 'border-box',
+                            width: drawerWidth,
+                            transition: theme.transitions.create('width', {
+                                easing: theme.transitions.easing.sharp,
+                                duration: theme.transitions.duration.enteringScreen,
+                            }),
+                        },
                     }}
-                    open
+                    open={drawerOpen}
                 >
                     {drawer}
                 </Drawer>
@@ -162,7 +176,11 @@ const Layout = ({ children }) => {
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
+                    width: drawerOpen ? { sm: `calc(100% - ${drawerWidth}px)` } : '100%',
+                    transition: theme.transitions.create(['margin', 'width'], {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.leavingScreen,
+                    }),
                 }}
             >
                 <Toolbar />
