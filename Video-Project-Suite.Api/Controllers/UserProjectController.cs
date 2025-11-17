@@ -15,8 +15,8 @@ namespace Video_Project_Suite.Api.Controllers
         [HttpGet("all-user-projects")]
         public async Task<IActionResult> GetAllUserProjects()
         {
-            var userProjects = await userProjectService.GetAllUserProjects();
-            return Ok(userProjects);
+            var userProjectsDtos = await userProjectService.GetAllUserProjects();
+            return Ok(userProjectsDtos);
         }
 
         // Get by ID
@@ -57,9 +57,9 @@ namespace Video_Project_Suite.Api.Controllers
 
         // Update user project
         [HttpPut("{userProjectId}")]
-        public async Task<IActionResult> UpdateUserProject(int userProjectId, UserProject userProject)
+        public async Task<IActionResult> UpdateUserProject(int userProjectId, UserProjectDto userProjectDto)
         {
-            var updatedUserProject = await userProjectService.UpdateUserProject(userProjectId, userProject);
+            var updatedUserProject = await userProjectService.UpdateUserProject(userProjectId, userProjectDto);
             if (updatedUserProject == null)
             {
                 return NotFound();

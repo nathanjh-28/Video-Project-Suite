@@ -228,11 +228,9 @@ namespace Video_Project_Suite.Tests.Controllers
             Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
             var tokenResponse = await DeserializeResponse<TokenResponseDto>(loginResponse);
-            Assert.NotNull(tokenResponse);
-            Assert.NotNull(tokenResponse.AccessToken);
-            Assert.NotEmpty(tokenResponse.AccessToken);
-            Assert.NotNull(tokenResponse.RefreshToken);
-            Assert.NotEmpty(tokenResponse.RefreshToken);
+
+            // This is now null because http only cookie refactor
+            Assert.Null(tokenResponse);
 
         }
 

@@ -13,15 +13,24 @@ import {
     IconButton,
     Fab,
     Breadcrumbs,
-    Link
+    Link,
+    Button
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { projectApi } from '../services/api';
+import { projectApi } from '../services';
+
+import ProjectList from '../components/ProjectList';
+import ProjectBoard from '../components/ProjectBoard';
 
 const ProjectsPage = () => {
+    const [trelloButton, setTrelloButton] = useState(false);
     const [projects, setProjects] = useState([]);
     const navigate = useNavigate();
+
+    const handleTrelloClick = () => {
+        setTrelloButton(!trelloButton);
+    };
 
     useEffect(() => {
         loadProjects();
@@ -67,71 +76,13 @@ const ProjectsPage = () => {
                 Projects
             </Typography>
 
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Project Title</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Budget</TableCell>
-                            <TableCell>Start Date</TableCell>
-                            <TableCell>End Date</TableCell>
-                            {/* <TableCell>Producer</TableCell>
-                            <TableCell>Client</TableCell>
-                            <TableCell>Editor</TableCell> */}
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {projects.map((project) => (
-                            <TableRow
-                                key={project.id}
-                                hover
-                                sx={{ cursor: 'pointer' }}
-                                onClick={() => navigate(`/projects/${project.id}`)}
-                            >
-                                <TableCell>
-                                    <Typography variant="subtitle2">{project.title}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="subtitle2">{project.type}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={project.status}
-                                        color={getStatusColor(project.status)}
-                                        size="small"
-                                    />
-                                </TableCell>
-                                <TableCell>${project.expenseBudget}</TableCell>
-                                <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
-                                <TableCell>{new Date(project.endDate).toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                    <IconButton
-                                        size="small"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(`/projects/${project.id}/edit`);
-                                        }}
-                                    >
-                                        <Edit />
-                                    </IconButton>
-                                    <IconButton
-                                        size="small"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(project.id);
-                                        }}
-                                    >
-                                        <Delete />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+
+            {trelloButton ? (
+                <ProjectBoard projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} />
+            ) : (
+                <ProjectList projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} navigate={navigate} />
+            )}
+
 
             <Fab
                 color="primary"
@@ -140,6 +91,15 @@ const ProjectsPage = () => {
             >
                 <Add />
             </Fab>
+
+            <Fab
+                color="secondary"
+                sx={{ position: 'fixed', bottom: 16, right: 80 }}
+                onClick={handleTrelloClick}
+            >
+                {trelloButton ? 'Table' : 'Kanban'}
+            </Fab>
+
         </Box>
     );
 };

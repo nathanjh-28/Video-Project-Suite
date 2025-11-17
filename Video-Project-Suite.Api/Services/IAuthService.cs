@@ -17,7 +17,7 @@ public interface IAuthService
     Task<User?> RegisterAsync(RegisterUserDto request);
     Task<TokenResponseDto?> LoginAsync(UserDto request);
 
-    Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
+    Task<TokenResponseDto?> RefreshTokensAsync(TokenResponseDto request);
     Task<User?> AlterUserRoleAsync(AlterUserRoleDto request);
 
 
@@ -32,16 +32,19 @@ public interface IAuthService
     Task<User?> DeleteAccountAsync(int userId);
 
     // Get all Users
-    Task<IEnumerable<User>> GetAllUsersAsync();
+    Task<IEnumerable<UserDetailDto>> GetAllUsersAsync();
 
     // Get a user by ID
-    Task<User?> GetUserByIdAsync(int userId);
+    Task<UserDetailDto?> GetUserByIdAsync(int userId);
 
     // Update User Account
     Task<User?> UpdateUserAsync(int userId, RegisterUserDto user);
 
     // Get Users with a specific role
     Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName);
+
+
+    void SetTokensInsideCookie(TokenResponseDto tokenResponse, HttpContext context);
 
 
 }

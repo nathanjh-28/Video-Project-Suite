@@ -13,7 +13,7 @@ import {
     Link
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projectApi } from '../services/api';
+import { projectApi } from '../services';
 
 const ProjectForm = () => {
     const [project, setProject] = useState({
@@ -49,6 +49,7 @@ const ProjectForm = () => {
         try {
             const data = await projectApi.getById(id);
             setProject(data);
+            console.log("project data:\n", data);
         } catch (error) {
             console.error('Failed to load project:', error);
         }

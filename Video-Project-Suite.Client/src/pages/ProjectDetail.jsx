@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projectApi } from '../services/api';
+import { projectApi } from '../services';
 
 const ProjectDetail = () => {
     const [project, setProject] = useState(null);

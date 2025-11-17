@@ -20,7 +20,7 @@ public class UserProjectService : IUserProjectService
         {
             ProjectId = userProjectDto.ProjectId,
             UserId = userProjectDto.UserId,
-            AssignedAt = DateTime.UtcNow,
+            AssignedAt = DateOnly.FromDateTime(DateTime.UtcNow),
             Role = userProjectDto.Role
         };
 
@@ -56,14 +56,31 @@ public class UserProjectService : IUserProjectService
         return userProject;
     }
 
-    public async Task<IEnumerable<UserProject>> GetAllUserProjects()
+    public async Task<IEnumerable<UserProjectGetDto>> GetAllUserProjects()
     {
-        var userProjects = await _context.UserProject.ToListAsync();
+        // get all user projects, users, and projects, and map to list of UserProjectDto
+        // this should be like an inner join
+        var userProjects = await _context.UserProject
+            .Include(up => up.Project)
+            .Include(up => up.User)
+            .ToListAsync();
         if (userProjects == null || !userProjects.Any())
         {
-            return Enumerable.Empty<UserProject>();
+            return Enumerable.Empty<UserProjectGetDto>();
         }
-        return userProjects;
+        var userProjectDtos = userProjects.Select(up => new UserProjectGetDto
+        {
+            Id = up.Id,
+            ProjectId = up.ProjectId,
+            UserId = up.UserId,
+            Role = up.Role,
+            AssignedAt = up.AssignedAt,
+            RemovedAt = up.RemovedAt,
+            ProjectShortName = up.Project.ShortName,
+            UserName = up.User.Username
+        });
+
+        return userProjectDtos;
     }
 
     public async Task<UserProject> GetUserProjectById(int userProjectId)
@@ -92,7 +109,7 @@ public class UserProjectService : IUserProjectService
         return userProjects;
     }
 
-    public async Task<UserProject?> UpdateUserProject(int userProjectId, UserProject userProject)
+    public async Task<UserProjectDto?> UpdateUserProject(int userProjectId, UserProjectDto userProjectDto)
     {
         var oldUserProject = await _context.UserProject.FindAsync(userProjectId);
         if (oldUserProject == null)
@@ -101,10 +118,31 @@ public class UserProjectService : IUserProjectService
         }
         else
         {
-            oldUserProject.RemovedAt = userProject.RemovedAt;
-            oldUserProject.Role = userProject.Role;
+            oldUserProject.ProjectId = userProjectDto.ProjectId;
+            oldUserProject.UserId = userProjectDto.UserId;
+            oldUserProject.Role = userProjectDto.Role;
+            oldUserProject.AssignedAt = userProjectDto.AssignedAt;
+            oldUserProject.RemovedAt = userProjectDto.RemovedAt;
+
+            _context.UserProject.Update(oldUserProject);
             await _context.SaveChangesAsync();
-            return oldUserProject;
+
+            var newUserProjectUpdated = await _context.UserProject.FindAsync(userProjectId);
+            if (newUserProjectUpdated == null)
+            {
+                return null;
+            }
+
+            var updatedUserProjectDto = new UserProjectDto
+            {
+                ProjectId = newUserProjectUpdated.ProjectId,
+                UserId = newUserProjectUpdated.UserId,
+                Role = newUserProjectUpdated.Role,
+                AssignedAt = newUserProjectUpdated.AssignedAt,
+                RemovedAt = newUserProjectUpdated.RemovedAt
+            };
+
+            return updatedUserProjectDto;
         }
     }
 }

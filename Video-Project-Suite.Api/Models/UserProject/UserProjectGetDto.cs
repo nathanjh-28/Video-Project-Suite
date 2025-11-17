@@ -5,8 +5,9 @@ namespace Video_Project_Suite.Api.Models.UserProject;
 using Video_Project_Suite.Api.Models.Project;
 using Video_Project_Suite.Api.Models.User;
 
-public class UserProjectDto
+public class UserProjectGetDto
 {
+    public int Id { get; set; }
     public int ProjectId { get; set; }
     public int UserId { get; set; }
 

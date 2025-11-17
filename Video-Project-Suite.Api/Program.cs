@@ -122,6 +122,7 @@ public class Program
             jwtToken = "DummyTokenForTestingPurposesOnly-MustBeLongEnough-1234567890ABCDEFGHIJKLMNOP";
             Console.WriteLine("WARNING: Using dummy JWT token - this should only happen in tests");
         }
+
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(Options =>
         {
             Options.TokenValidationParameters = new TokenValidationParameters
@@ -132,11 +133,26 @@ public class Program
                 ValidAudience = builder.Configuration["AppSettings:Audience"],
                 ValidateLifetime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtToken)),
-                ValidateIssuerSigningKey = true
+                ValidateIssuerSigningKey = true,
+                // ClockSkew = TimeSpan.Zero  // Remove the default 5-minute clock skew for testing purposes
+            };
+
+            Options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    context.Request.Cookies.TryGetValue("accessToken", out var accessToken);
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
             };
         });
 
-        // Add Auth Service
+        // Add Services
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IProjectService, ProjectService>();
         builder.Services.AddScoped<IUserProjectService, UserProjectService>();
@@ -161,6 +177,9 @@ public class Program
 
         // Enable HTTPS redirection
         app.UseHttpsRedirection();
+
+        // Enable authentication middleware
+        app.UseAuthentication();
 
         // Enable authorization middleware
         app.UseAuthorization();

@@ -1,11 +1,6 @@
-// src/services/api.js
-// const API_BASE_URL = '/api'; // Replace with your API URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+import { apiCall } from './apiClient';
 
-console.log("API_BASE_URL:", API_BASE_URL);
-console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-
-// Mock data for development
+// Mock data for development fallback
 const mockProjects = [
     {
         id: 1,
@@ -66,107 +61,81 @@ const mockProjects = [
     }
 ];
 
-// API helper function
-const apiCall = async (endpoint, options = {}) => {
-    console.log(`API Call: ${API_BASE_URL}${endpoint}`, options);
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
-            ...options,
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // Only parse JSON if there's content
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            return await response.json();
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error('API call failed:', error);
-        throw error;
-    }
-};
-
-// Project API
+/**
+ * Project API service
+ * Handles all project-related API calls
+ */
 export const projectApi = {
+    /**
+     * Get all projects
+     * @returns {Promise<Array>} List of projects
+     */
     getAll: async () => {
         try {
-            // Replace with actual API call
-            return await apiCall('/Project/projects')
-            // return mockProjects; // Using mock data for now
+            return await apiCall('/Project/projects');
         } catch (error) {
             console.error('Failed to fetch projects:', error);
             return mockProjects; // Fallback to mock data
         }
     },
 
+    /**
+     * Get a single project by ID
+     * @param {number|string} id - Project ID
+     * @returns {Promise<Object>} Project details
+     */
     getById: async (id) => {
         try {
             return await apiCall(`/Project/project/${id}`);
-            // return mockProjects.find(p => p.id === parseInt(id));
         } catch (error) {
             console.error('Failed to fetch project:', error);
             throw error;
         }
     },
 
+    /**
+     * Create a new project
+     * @param {Object} projectData - Project data
+     * @returns {Promise<Object>} Created project
+     */
     create: async (projectData) => {
         try {
             return await apiCall('/Project/project/new', {
                 method: 'POST',
                 body: JSON.stringify(projectData),
             });
-
-            // // Mock implementation
-            // const newProject = {
-            //     id: Date.now(),
-            //     created: new Date().toISOString().split('T')[0],
-            //     ...projectData
-            // };
-            // mockProjects.push(newProject);
-            // return newProject;
         } catch (error) {
             console.error('Failed to create project:', error);
             throw error;
         }
     },
 
+    /**
+     * Update an existing project
+     * @param {number|string} id - Project ID
+     * @param {Object} projectData - Updated project data
+     * @returns {Promise<Object>} Updated project
+     */
     update: async (id, projectData) => {
         try {
             return await apiCall(`/Project/project/${id}/update`, {
                 method: 'PUT',
                 body: JSON.stringify(projectData),
             });
-
-            // Mock implementation
-            // const index = mockProjects.findIndex(p => p.id === parseInt(id));
-            // if (index !== -1) {
-            //     mockProjects[index] = { ...mockProjects[index], ...projectData };
-            //     return mockProjects[index];
-            // }
         } catch (error) {
             console.error('Failed to update project:', error);
             throw error;
         }
     },
 
+    /**
+     * Delete a project
+     * @param {number|string} id - Project ID
+     * @returns {Promise<void>}
+     */
     delete: async (id) => {
         try {
             await apiCall(`/Project/project/${id}`, { method: 'DELETE' });
-
-            // // Mock implementation
-            // const index = mockProjects.findIndex(p => p.id === parseInt(id));
-            // if (index !== -1) {
-            //     mockProjects.splice(index, 1);
-            // }
         } catch (error) {
             console.error('Failed to delete project:', error);
             throw error;

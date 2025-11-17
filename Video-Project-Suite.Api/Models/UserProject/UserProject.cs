@@ -12,13 +12,13 @@ public class UserProject
     public int ProjectId { get; set; }
     public int UserId { get; set; }
 
-    public Video_Project_Suite.Api.Models.User.User User { get; set; } = null!;
+    public Video_Project_Suite.Api.Models.User.User User { get; set; }
 
-    public Project Project { get; set; } = null!;
+    public Project Project { get; set; }
 
     // datetime
-    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? RemovedAt { get; set; } = null;
+    public DateOnly AssignedAt { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly? RemovedAt { get; set; } = null;
 
     // role
 
