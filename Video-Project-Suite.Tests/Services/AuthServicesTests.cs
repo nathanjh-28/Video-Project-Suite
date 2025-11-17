@@ -286,9 +286,9 @@ namespace Video_Project_Suite.Api.Tests.Services
             testUser.RefreshToken = "valid-refresh-token";
             testUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
             await _context.SaveChangesAsync();
-            var refreshRequest = new RefreshTokenRequestDto
+            var refreshRequest = new TokenResponseDto
             {
-                UserId = testUser.Id,
+                AccessToken = "some-access-token",
                 RefreshToken = "valid-refresh-token"
             };
             // Act
@@ -315,9 +315,9 @@ namespace Video_Project_Suite.Api.Tests.Services
             _context.User.Add(testUser);
             await _context.SaveChangesAsync();
 
-            var refreshRequest = new RefreshTokenRequestDto
+            var refreshRequest = new TokenResponseDto
             {
-                UserId = testUser.Id,
+                AccessToken = "some-access-token",
                 RefreshToken = "invalid-refresh-token"
             };
 

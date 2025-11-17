@@ -80,7 +80,7 @@ const ProjectsPage = () => {
             {trelloButton ? (
                 <ProjectBoard projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} />
             ) : (
-                <ProjectList projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} />
+                <ProjectList projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} navigate={navigate} />
             )}
 
 

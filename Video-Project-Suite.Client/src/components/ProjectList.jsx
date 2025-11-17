@@ -18,8 +18,14 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 
+import { useNavigate } from 'react-router-dom';
 
-const ProjectList = ({ projects, handleDelete, getStatusColor, navigate }) => {
+
+const ProjectList = ({ projects, handleDelete, getStatusColor }) => {
+
+    const navigate = useNavigate();
+
+
     return (
         <TableContainer component={Paper}>
             <Table>
