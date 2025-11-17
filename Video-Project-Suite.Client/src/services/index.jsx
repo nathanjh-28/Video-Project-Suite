@@ -8,5 +8,5 @@
 
 export { projectApi } from './projectApi';
 export { userApi } from './userApi';
-export { userProjectApi } from './userprojectApi';
+export { userProjectApi } from './userProjectApi';
 export { apiCall, apiCallNoThrow, API_BASE_URL } from './apiClient';
