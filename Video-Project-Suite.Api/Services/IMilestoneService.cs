@@ -12,19 +12,19 @@ public interface IMilestoneService
 
     // get milestone by id
 
-    Task<Milestone> GetMilestoneByIdAsync(int id);
+    Task<Milestone?> GetMilestoneByIdAsync(int id);
 
     // create new milestone
 
-    Task<Milestone> CreateMilestoneAsync(Milestone milestone);
+    Task<Milestone?> CreateMilestoneAsync(MilestoneDto milestone);
 
     // update milestone
 
-    Task<Milestone> UpdateMilestoneAsync(int id, Milestone milestone);
+    Task<Milestone?> UpdateMilestoneAsync(int id, MilestoneDto milestone);
 
     // delete milestone
 
-    Task<bool> DeleteMilestoneAsync(int id);
+    Task<Milestone?> DeleteMilestoneAsync(int id);
 
     // change position on milestone
 

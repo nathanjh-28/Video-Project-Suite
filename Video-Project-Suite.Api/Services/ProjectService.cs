@@ -37,7 +37,7 @@ public class ProjectService : IProjectService
             Comments = newProjectDto.Comments,
             StartDate = newProjectDto.StartDate,
             EndDate = newProjectDto.EndDate,
-            Status = newProjectDto.Status,
+            MilestoneId = newProjectDto.MilestoneId,
             Type = newProjectDto.Type
         };
 
@@ -64,7 +64,7 @@ public class ProjectService : IProjectService
             Comments = entry.Entity.Comments,
             StartDate = entry.Entity.StartDate,
             EndDate = entry.Entity.EndDate,
-            Status = entry.Entity.Status,
+            MilestoneId = entry.Entity.MilestoneId,
             Type = entry.Entity.Type
         };
 
@@ -98,7 +98,7 @@ public class ProjectService : IProjectService
             Comments = entity.Entity.Comments,
             StartDate = entity.Entity.StartDate,
             EndDate = entity.Entity.EndDate,
-            Status = entity.Entity.Status,
+            MilestoneId = entity.Entity.MilestoneId,
             Type = entity.Entity.Type
         };
 
@@ -135,7 +135,7 @@ public class ProjectService : IProjectService
             Comments = p.Comments,
             StartDate = p.StartDate,
             EndDate = p.EndDate,
-            Status = p.Status,
+            MilestoneId = p.MilestoneId,
             Type = p.Type
 
         });
@@ -167,7 +167,7 @@ public class ProjectService : IProjectService
             Comments = project.Comments,
             StartDate = project.StartDate,
             EndDate = project.EndDate,
-            Status = project.Status,
+            MilestoneId = project.MilestoneId,
             Type = project.Type
         };
 
@@ -198,7 +198,7 @@ public class ProjectService : IProjectService
             oldProject.Comments = projectDto.Comments;
             oldProject.StartDate = projectDto.StartDate;
             oldProject.EndDate = projectDto.EndDate;
-            oldProject.Status = projectDto.Status;
+            oldProject.MilestoneId = projectDto.MilestoneId;
             oldProject.Type = projectDto.Type;
 
             _context.Project.Update(oldProject);
@@ -224,7 +224,7 @@ public class ProjectService : IProjectService
                 Comments = newProjectUpdated.Comments,
                 StartDate = newProjectUpdated.StartDate,
                 EndDate = newProjectUpdated.EndDate,
-                Status = newProjectUpdated.Status,
+                MilestoneId = newProjectUpdated.MilestoneId,
                 Type = newProjectUpdated.Type
             };
 

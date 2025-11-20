@@ -10,8 +10,12 @@ public class Milestone
     // name
     public string Name { get; set; } = string.Empty;
 
-    // position
+    // position among milestones (changeable)
     public int Position { get; set; }
+
+    // Projects associated with this milestone
+
+    public ICollection<Video_Project_Suite.Api.Models.Project.Project> Projects { get; set; } = null!;
 
 
 }

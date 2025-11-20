@@ -56,11 +56,11 @@ const ProjectsPage = () => {
         }
     };
 
-    const getStatusColor = (status) => {
-        switch (status.toLowerCase()) {
-            case 'completed': return 'success';
-            case 'in progress': return 'info';
-            case 'on hold': return 'warning';
+    const getMilestoneColor = (milestone) => {
+        switch (milestone) {
+            case 1: return 'success';
+            case 2: return 'info';
+            case 3: return 'warning';
             default: return 'default';
         }
     };
@@ -78,9 +78,9 @@ const ProjectsPage = () => {
 
 
             {trelloButton ? (
-                <ProjectBoard projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} />
+                <ProjectBoard projects={projects} handleDelete={handleDelete} getMilestoneColor={getMilestoneColor} />
             ) : (
-                <ProjectList projects={projects} handleDelete={handleDelete} getStatusColor={getStatusColor} navigate={navigate} />
+                <ProjectList projects={projects} handleDelete={handleDelete} getMilestoneColor={getMilestoneColor} navigate={navigate} />
             )}
 
 

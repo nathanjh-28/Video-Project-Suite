@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Video_Project_Suite.Api.Models.Milestone;
+using Video_Project_Suite.Api.Services;
 
 namespace Video_Project_Suite.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MilestoneController : ControllerBase
+    public class MilestoneController(IMilestoneService milestoneService) : ControllerBase
     {
 
         // get all milestones
@@ -13,7 +15,8 @@ namespace Video_Project_Suite.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllMilestones()
         {
-            return Ok("Get All Milestones");
+            var milestones = await milestoneService.GetAllMilestonesAsync();
+            return Ok(milestones);
         }
 
         // get milestone by id
@@ -21,23 +24,43 @@ namespace Video_Project_Suite.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMilestoneById(int id)
         {
-            return Ok($"Get Milestone By Id: {id}");
+            var milestone = await milestoneService.GetMilestoneByIdAsync(id);
+            if (milestone == null)
+            {
+                return NotFound();
+            }
+            return Ok(milestone);
         }
 
         // create new milestone
 
         [HttpPost]
-        public async Task<IActionResult> CreateMilestone()
+        public async Task<IActionResult> CreateMilestone(MilestoneDto milestoneDto)
         {
-            return Ok("Create Milestone");
+            if (milestoneDto == null)
+            {
+                return BadRequest("Milestone data is required.");
+            }
+            var createdMilestone = await milestoneService.CreateMilestoneAsync(milestoneDto);
+            return Ok(createdMilestone);
         }
 
         // update milestone
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMilestone(int id)
+        public async Task<IActionResult> UpdateMilestone(int id, MilestoneDto milestone)
         {
-            return Ok($"Update Milestone: {id}");
+            if (milestone == null)
+            {
+                return BadRequest("Milestone data is required.");
+            }
+
+            var updatedMilestone = await milestoneService.UpdateMilestoneAsync(id, milestone);
+            if (updatedMilestone == null)
+            {
+                return BadRequest("Failed to update milestone position.");
+            }
+            return Ok(updatedMilestone);
         }
 
         // delete milestone
@@ -45,7 +68,13 @@ namespace Video_Project_Suite.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMilestone(int id)
         {
-            return Ok($"Delete Milestone: {id}");
+            var deletedMilestone = await milestoneService.DeleteMilestoneAsync(id);
+            if (deletedMilestone == null)
+            {
+                // invalid input
+                return BadRequest("Invalid milestone ID.");
+            }
+            return Ok(deletedMilestone);
         }
 
         // change position on milestone
@@ -53,7 +82,15 @@ namespace Video_Project_Suite.Api.Controllers
         [HttpPut("{id}/position")]
         public async Task<IActionResult> ChangeMilestonePosition(int id, int newPosition)
         {
-            return Ok($"Change Milestone Position: {id} to {newPosition}");
+            var success = await milestoneService.ChangeMilestonePositionAsync(id, newPosition);
+            if (success == false)
+            {
+                return BadRequest("Invalid milestone ID or position.");
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
     }
