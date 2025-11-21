@@ -9,4 +9,5 @@
 export { projectApi } from './projectApi';
 export { userApi } from './userApi';
 export { userProjectApi } from './userProjectApi';
+export { milestoneApi } from './MilestoneApi';
 export { apiCall, apiCallNoThrow, API_BASE_URL } from './apiClient';
