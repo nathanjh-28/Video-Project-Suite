@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { projectApi } from '../services';
+import { projectApi, milestoneApi } from '../services';
 
 import ProjectList from '../components/ProjectList';
 import ProjectBoard from '../components/ProjectBoard';
@@ -26,6 +26,7 @@ import ProjectBoard from '../components/ProjectBoard';
 const ProjectsPage = () => {
     const [trelloButton, setTrelloButton] = useState(false);
     const [projects, setProjects] = useState([]);
+    const [milestones, setMilestones] = useState([]);
     const navigate = useNavigate();
 
     const handleTrelloClick = () => {
@@ -34,6 +35,7 @@ const ProjectsPage = () => {
 
     useEffect(() => {
         loadProjects();
+        loadMilestones();
     }, []);
 
     const loadProjects = async () => {
@@ -42,6 +44,17 @@ const ProjectsPage = () => {
             setProjects(data);
         } catch (error) {
             console.error('Failed to load projects:', error);
+        }
+    };
+
+    const loadMilestones = async () => {
+        try {
+            const data = await milestoneApi.getAll();
+            setMilestones(data);
+            return data;
+        } catch (error) {
+            console.error('Failed to load milestones:', error);
+            return [];
         }
     };
 
@@ -58,9 +71,13 @@ const ProjectsPage = () => {
 
     const getMilestoneColor = (milestone) => {
         switch (milestone) {
-            case 1: return 'success';
-            case 2: return 'info';
-            case 3: return 'warning';
+            case 1: return 'primary'; // prospect
+            case 2: return 'warning'; // bidding
+            case 3: return 'secondary'; // preproduction
+            case 4: return 'default'; // production
+            case 5: return 'secondary'; // post production
+            case 6: return 'success'; // invoiced
+            case 7: return 'default'; // completed
             default: return 'default';
         }
     };
@@ -80,7 +97,7 @@ const ProjectsPage = () => {
             {trelloButton ? (
                 <ProjectBoard projects={projects} handleDelete={handleDelete} getMilestoneColor={getMilestoneColor} />
             ) : (
-                <ProjectList projects={projects} handleDelete={handleDelete} getMilestoneColor={getMilestoneColor} navigate={navigate} />
+                <ProjectList projects={projects} handleDelete={handleDelete} getMilestoneColor={getMilestoneColor} navigate={navigate} milestones={milestones} />
             )}
 
 

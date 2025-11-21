@@ -285,7 +285,7 @@ public class DbInitializer
                 Comments = "Keep videos under 45 seconds each.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(4),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(24),
-                MilestoneId = 1,
+                MilestoneId = 2,
                 Type = "Short Promo Videos"
             },
 
@@ -302,7 +302,7 @@ public class DbInitializer
                 Comments = "Highlight new exhibition.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(9),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(29),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 2, // Preproduction
                 Type = "Promotional Videos"
             },
 
@@ -319,7 +319,7 @@ public class DbInitializer
                 Comments = "Must comply with OSHA standards.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-20),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(25),
-                MilestoneId = 6, // Post-Production
+                MilestoneId = 3, // Post-Production
                 Type = "Training Video"
             },
 
@@ -336,7 +336,7 @@ public class DbInitializer
                 Comments = "Emphasize action and adventure.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(7),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(19),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 3, // Preproduction
                 Type = "Promo Video"
             },
 
@@ -353,7 +353,7 @@ public class DbInitializer
                 Comments = "Include slow-motion driving shots.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(11),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(27),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 4, // Preproduction
                 Type = "Commercial"
             },
 
@@ -370,7 +370,7 @@ public class DbInitializer
                 Comments = "Highlight festival atmosphere.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-25),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-15),
-                MilestoneId = 6, // Post-Production
+                MilestoneId = 4, // Post-Production
                 Type = "Event Highlight Video"
             },
 
@@ -387,7 +387,7 @@ public class DbInitializer
                 Comments = "Emphasize environmental benefits.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(17),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 5, // Preproduction
                 Type = "Product Demo Videos"
             },
 
@@ -404,7 +404,7 @@ public class DbInitializer
                 Comments = "Emphasize patient stories and community impact.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-40),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(40),
-                MilestoneId = 6, // Post-Production
+                MilestoneId = 5, // Post-Production
                 Type = "Short Documentary"
             },
 
@@ -421,7 +421,7 @@ public class DbInitializer
                 Comments = "Keep concise and persuasive.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(2),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(15),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 6, // Preproduction
                 Type = "Investor Pitch Videos"
             },
 
@@ -438,7 +438,7 @@ public class DbInitializer
                 Comments = "Emphasize city lifestyle aesthetics.",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(45),
-                MilestoneId = 1, // Preproduction
+                MilestoneId = 6, // Preproduction
                 Type = "Branded Content Series"
             }
         };

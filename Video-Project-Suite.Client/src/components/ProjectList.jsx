@@ -17,6 +17,7 @@ import {
     Button
 } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
+import { milestoneApi } from '../services';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +25,22 @@ import { useNavigate } from 'react-router-dom';
 const ProjectList = ({ projects, handleDelete, getMilestoneColor }) => {
 
     const navigate = useNavigate();
+    const [milestones, setMilestones] = useState([]);
 
+    useEffect(() => {
+        loadMilestones();
+    }, []);
+
+    const loadMilestones = async () => {
+        try {
+            const data = await milestoneApi.getAll();
+            setMilestones(data);
+            return data;
+        } catch (error) {
+            console.error('Failed to load milestones:', error);
+            return [];
+        }
+    };
 
     return (
         <Box sx={{ overflowY: 'scroll', maxHeight: '70vh' }}>
@@ -34,7 +50,7 @@ const ProjectList = ({ projects, handleDelete, getMilestoneColor }) => {
                         <TableRow>
                             <TableCell>Project Title</TableCell>
                             <TableCell>Type</TableCell>
-                            <TableCell>Status</TableCell>
+                            <TableCell>Milestone</TableCell>
                             <TableCell>Budget</TableCell>
                             <TableCell>Start Date</TableCell>
                             <TableCell>End Date</TableCell>
@@ -60,8 +76,8 @@ const ProjectList = ({ projects, handleDelete, getMilestoneColor }) => {
                                 </TableCell>
                                 <TableCell>
                                     <Chip
-                                        label={project.milestone}
-                                        color={getMilestoneColor(project.milestone)}
+                                        label={milestones[project.milestoneId - 1].name}
+                                        color={getMilestoneColor(project.milestoneId)}
                                         size="small"
                                     />
                                 </TableCell>
