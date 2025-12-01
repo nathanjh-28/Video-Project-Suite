@@ -186,10 +186,10 @@ public class Program
         app.UseAuthorization();
 
         // create and seed the database if it does not exist
-        // app.CreateDbIfNotExists();
+        app.CreateDbIfNotExists();
 
         // TEMPORARY: Uncomment the line below to reset the database with seed data
-        app.ResetDatabase();
+        // app.ResetDatabase();
 
         // Map the controllers to the request pipeline
         app.MapControllers();
