@@ -229,7 +229,6 @@ const Board = () => {
                                         </Box>
                                     )}
                                 </Draggable>
-                                // <MilestoneList key={milestone.id} milestone={milestone} projects={mockData.filter(project => project.milestone_id === milestone.id)} navigate={navigate} index={index} />
                             ))
                             }
                             {provided.placeholder}
@@ -239,12 +238,6 @@ const Board = () => {
                 </Droppable>
 
             </DragDropContext>
-            {/* <Box sx={{ display: 'flex', gap: 3 }}>
-                {milestones.map((milestone) => (
-                    <MilestoneList key={milestone.id} milestone={milestone} projects={mockData.filter(project => project.milestone_id === milestone.id)} navigate={navigate} />
-                ))
-                }
-            </Box> */}
         </Box >
     )
 
