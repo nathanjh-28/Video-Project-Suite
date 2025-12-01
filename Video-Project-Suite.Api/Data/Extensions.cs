@@ -32,14 +32,26 @@ public static class Extensions
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<AppDbContext>();
 
-                // Drop all tables by dropping and recreating the schema
-                Console.WriteLine("Dropping all tables...");
-                context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE;");
-                context.Database.ExecuteSqlRaw("CREATE SCHEMA public;");
+                // Check if using in-memory database
+                bool isInMemory = context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory";
 
-                // Grant permissions (PostgreSQL requires this after recreating schema)
-                context.Database.ExecuteSqlRaw("GRANT ALL ON SCHEMA public TO nathanjh;");
-                context.Database.ExecuteSqlRaw("GRANT ALL ON SCHEMA public TO public;");
+                if (!isInMemory)
+                {
+                    // Drop all tables by dropping and recreating the schema (PostgreSQL only)
+                    Console.WriteLine("Dropping all tables...");
+                    context.Database.ExecuteSqlRaw("DROP SCHEMA public CASCADE;");
+                    context.Database.ExecuteSqlRaw("CREATE SCHEMA public;");
+
+                    // Grant permissions (PostgreSQL requires this after recreating schema)
+                    context.Database.ExecuteSqlRaw("GRANT ALL ON SCHEMA public TO nathanjh;");
+                    context.Database.ExecuteSqlRaw("GRANT ALL ON SCHEMA public TO public;");
+                }
+                else
+                {
+                    // For in-memory database, just delete it
+                    Console.WriteLine("Clearing in-memory database...");
+                    context.Database.EnsureDeleted();
+                }
 
                 // Recreate the database schema
                 Console.WriteLine("Creating database schema...");

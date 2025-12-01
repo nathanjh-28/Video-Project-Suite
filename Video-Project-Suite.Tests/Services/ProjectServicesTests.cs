@@ -61,7 +61,6 @@ namespace Video_Project_Suite.Api.Tests.Services
                 Comments = "Comments",
                 StartDate = DateOnly.FromDateTime(DateTime.Now),
                 EndDate = DateOnly.FromDateTime(DateTime.Now.AddMonths(1)),
-                Status = "Project Status",
                 Type = "Project Type"
             };
         }
@@ -83,7 +82,6 @@ namespace Video_Project_Suite.Api.Tests.Services
                 Comments = project.Comments,
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
-                Status = project.Status,
                 Type = project.Type
             };
         }
@@ -105,7 +103,6 @@ namespace Video_Project_Suite.Api.Tests.Services
                 Comments = projectDto.Comments,
                 StartDate = projectDto.StartDate,
                 EndDate = projectDto.EndDate,
-                Status = projectDto.Status,
                 Type = projectDto.Type
             };
         }
@@ -197,7 +194,6 @@ namespace Video_Project_Suite.Api.Tests.Services
             Assert.Equal(newProjectDto.StartDate, projectDto.StartDate);
             Assert.Equal(newProjectDto.EndDate, projectDto.EndDate);
             Assert.True(projectDto.StartDate < projectDto.EndDate, "Start date should be before end date");
-            Assert.Equal(newProjectDto.Status, projectDto.Status);
             Assert.Equal(newProjectDto.Type, projectDto.Type);
             Assert.Equal(newProjectDto.Title, projectDto.Title);
         }

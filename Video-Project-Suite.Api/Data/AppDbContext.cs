@@ -42,7 +42,13 @@ public class AppDbContext : DbContext
                 j =>
                 {
                     j.HasKey(pa => new { pa.Id }); // Primary key
-                    j.Property(pa => pa.AssignedAt).HasDefaultValueSql("now()"); // PostgreSQL
+
+                    // Only apply PostgreSQL-specific configuration if not using in-memory database
+                    if (Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+                    {
+                        j.Property(pa => pa.AssignedAt).HasDefaultValueSql("now()"); // PostgreSQL
+                    }
+
                     j.HasIndex(pa => new
                     {
                         pa.UserId,
