@@ -20,4 +20,7 @@ public interface IProjectService
     // Delete a project
     Task<ProjectDto?> DeleteProjectAsync(int projectId);
 
+    // update project milestone
+    Task<bool> UpdateProjectMilestoneAsync(int projectId, int milestoneId);
+
 }

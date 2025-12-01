@@ -97,9 +97,8 @@ export const milestoneApi = {
 
     changePosition: async (id, newPosition) => {
         try {
-            return await apiCall(`/Milestone/${id}/position`, {
+            return await apiCall(`/Milestone/${id}/position/${newPosition}`, {
                 method: 'PUT',
-                body: JSON.stringify({ position: newPosition }),
             });
         } catch (error) {
             console.error('Failed to change Milestone position:', error);

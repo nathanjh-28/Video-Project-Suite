@@ -141,4 +141,22 @@ export const projectApi = {
             throw error;
         }
     }
+
+    /**
+     * Update project milestone
+     * @param {number|string} projectId - Project ID
+     * @param {number|string} milestoneId - Milestone ID
+     * @returns {Promise<Object>} Updated project
+     */
+    ,
+    updateMilestone: async (projectId, milestoneId) => {
+        try {
+            return await apiCall(`/Project/project/${projectId}/milestone/${milestoneId}`, {
+                method: 'PUT',
+            });
+        } catch (error) {
+            console.error('Failed to update project milestone:', error);
+            throw error;
+        }
+    }
 };

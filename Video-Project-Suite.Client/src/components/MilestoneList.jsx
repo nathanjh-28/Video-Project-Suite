@@ -48,15 +48,17 @@ const milestonesList = ({ milestone, projects }) => {
         <Card sx={{ minWidth: 300, maxWidth: 300, minHeight: 400 }}>
             <CardHeader title={milestone.name} />
 
-            <Droppable key={milestone.id} droppableId={milestone.id.toString()}>
+            <Droppable key={milestone.id} droppableId={milestone.id.toString()} type="project" >
                 {(provided) => (
                     <Box
                         ref={provided.innerRef}
-                        {...provided.droppableProps} >
+                        {...provided.droppableProps}
+                        sx={(projects.length === 0) ? { minHeight: 300 } : { height: '100%' }}
+                    >
 
 
                         {projects.map((project, index) => (
-                            <Draggable draggableId={project.project_id.toString()} key={project.project_id} index={index}>
+                            <Draggable draggableId={'p' + project.id.toString()} key={project.id} index={index}>
 
                                 {(provided) => (
                                     <Box
@@ -64,16 +66,16 @@ const milestonesList = ({ milestone, projects }) => {
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}>
 
-                                        <Card sx={{ margin: 1, padding: 1, cursor: 'pointer', '&:hover': { padding: 1.5 } }} onClick={() => navigate(`/projects/${project.project_id}`)} key={project.project_id}>
+                                        <Card sx={{ margin: 1, padding: 1, cursor: 'pointer', '&:hover': { padding: 1.5 } }} onClick={() => navigate(`/projects/${project.id}`)} key={project.id}>
 
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Typography variant="subtitle2">{project.project_short_name}</Typography>
+                                                <Typography variant="subtitle2">{project.shortName}</Typography>
 
                                                 <IconButton
                                                     size="small"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        navigate(`/projects/${project.project_id}/edit`);
+                                                        navigate(`/projects/${project.id}/edit`);
                                                     }}
 
                                                 >

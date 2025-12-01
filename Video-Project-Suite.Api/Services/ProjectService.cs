@@ -231,6 +231,21 @@ public class ProjectService : IProjectService
             return updatedProjectDto;
         }
     }
+
+    public async Task<bool> UpdateProjectMilestoneAsync(int projectId, int milestoneId)
+    {
+        var project = await _context.Project.FindAsync(projectId);
+
+        if (project == null)
+        {
+            return false;
+        }
+
+        project.MilestoneId = milestoneId;
+        _context.Project.Update(project);
+        await _context.SaveChangesAsync();
+        return true;
+    }
     #endregion
 }
 

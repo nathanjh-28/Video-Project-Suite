@@ -79,10 +79,10 @@ namespace Video_Project_Suite.Api.Controllers
 
         // change position on milestone
 
-        [HttpPut("{id}/position")]
-        public async Task<IActionResult> ChangeMilestonePosition(int id, int newPosition)
+        [HttpPut("{id}/position/{position}")]
+        public async Task<IActionResult> ChangeMilestonePosition(int id, int position)
         {
-            var success = await milestoneService.ChangeMilestonePositionAsync(id, newPosition);
+            var success = await milestoneService.ChangeMilestonePositionAsync(id, position);
             if (success == false)
             {
                 return BadRequest("Invalid milestone ID or position.");
