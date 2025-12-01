@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Video_Project_Suite.Api.Models.User;
 using Video_Project_Suite.Api.Models.Project;
 using Video_Project_Suite.Api.Models.UserProject;
+using Video_Project_Suite.Api.Models.Milestone;
 
 namespace Video_Project_Suite.Api.Data;
 
@@ -23,6 +24,9 @@ public class AppDbContext : DbContext
     // Add DbSet for UserProject join table
     public DbSet<UserProject> UserProject => Set<UserProject>();
 
+    public DbSet<Video_Project_Suite.Api.Models.Milestone.Milestone> Milestones { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
@@ -38,7 +42,13 @@ public class AppDbContext : DbContext
                 j =>
                 {
                     j.HasKey(pa => new { pa.Id }); // Primary key
-                    j.Property(pa => pa.AssignedAt).HasDefaultValueSql("now()"); // PostgreSQL
+
+                    // Only apply PostgreSQL-specific configuration if not using in-memory database
+                    if (Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+                    {
+                        j.Property(pa => pa.AssignedAt).HasDefaultValueSql("now()"); // PostgreSQL
+                    }
+
                     j.HasIndex(pa => new
                     {
                         pa.UserId,
@@ -46,6 +56,14 @@ public class AppDbContext : DbContext
                         pa.Role
                     }).IsUnique();
                 });
+
+        modelBuilder.Entity<Video_Project_Suite.Api.Models.Milestone.Milestone>()
+            .HasMany(m => m.Projects)
+            .WithOne(p => p.Milestone)
+            .HasForeignKey(p => p.MilestoneId)
+            .IsRequired();
+
+
     }
 
 

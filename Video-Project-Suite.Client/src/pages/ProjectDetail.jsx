@@ -13,16 +13,31 @@ import {
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projectApi } from '../services';
+import { projectApi, milestoneApi } from '../services';
 
 const ProjectDetail = () => {
     const [project, setProject] = useState(null);
+    const [milestones, setMilestones] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
         loadProject();
+        loadMilestones();
     }, [id]);
+
+    const getMilestoneColor = (milestone) => {
+        switch (milestone) {
+            case 1: return 'primary'; // prospect
+            case 2: return 'warning'; // bidding
+            case 3: return 'secondary'; // preproduction
+            case 4: return 'default'; // production
+            case 5: return 'secondary'; // post production
+            case 6: return 'success'; // invoiced
+            case 7: return 'default'; // completed
+            default: return 'default';
+        }
+    };
 
     const loadProject = async () => {
         try {
@@ -30,6 +45,17 @@ const ProjectDetail = () => {
             setProject(data);
         } catch (error) {
             console.error('Failed to load project:', error);
+        }
+    };
+
+    const loadMilestones = async () => {
+        try {
+            const data = await milestoneApi.getAll();
+            setMilestones(data);
+            return data;
+        } catch (error) {
+            console.error('Failed to load milestones:', error);
+            return [];
         }
     };
 
@@ -92,8 +118,8 @@ const ProjectDetail = () => {
                             <Typography variant="subtitle2" color="text.secondary">Focus</Typography>
                             <Typography variant="body1" gutterBottom>{project.focus}</Typography>
 
-                            <Typography variant="subtitle2" color="text.secondary">Status</Typography>
-                            <Chip label={project.status} color="primary" size="small" sx={{ mb: 2 }} />
+                            <Typography variant="subtitle2" color="text.secondary">Milestone</Typography>
+                            <Chip label={milestones[project.milestoneId - 1]?.name} color={getMilestoneColor(project.milestoneId)} size="small" sx={{ mb: 2 }} />
 
                             <Typography variant="subtitle2" color="text.secondary">Client</Typography>
                             <Typography variant="body1" gutterBottom>{project.client}</Typography>

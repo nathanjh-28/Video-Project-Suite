@@ -15,6 +15,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import UsersDetail from './pages/UsersDetail';
 import UserProjectsPage from './pages/UserProjectsPage';
+import MilestonesPage from './pages/MilestonesPage';
+import MilestoneForm from './pages/MilestoneForm';
 
 const theme = createTheme({
   palette: {
@@ -47,6 +49,9 @@ function App() {
               <Route path="/projects/:id/edit" element={<ProtectedRoute><ProjectForm /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
               <Route path="/users/:id" element={<ProtectedRoute><UsersDetail /></ProtectedRoute>} />
+              <Route path="/milestones" element={<ProtectedRoute><MilestonesPage /></ProtectedRoute>} />
+              <Route path="/milestones/new" element={<ProtectedRoute><MilestoneForm /></ProtectedRoute>} />
+              <Route path="/milestones/:id/edit" element={<ProtectedRoute><MilestoneForm /></ProtectedRoute>} />
             </Routes>
           </Layout>
         </AuthProvider>

@@ -156,6 +156,7 @@ public class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IProjectService, ProjectService>();
         builder.Services.AddScoped<IUserProjectService, UserProjectService>();
+        builder.Services.AddScoped<IMilestoneService, MilestoneService>();
 
         // Configure the HTTP request pipeline.
         var app = builder.Build();
@@ -185,7 +186,10 @@ public class Program
         app.UseAuthorization();
 
         // create and seed the database if it does not exist
-        app.CreateDbIfNotExists();
+        // app.CreateDbIfNotExists();
+
+        // TEMPORARY: Uncomment the line below to reset the database with seed data
+        app.ResetDatabase();
 
         // Map the controllers to the request pipeline
         app.MapControllers();

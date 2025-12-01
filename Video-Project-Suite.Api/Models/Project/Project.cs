@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UserModel = Video_Project_Suite.Api.Models.User;
+using MilestoneModel = Video_Project_Suite.Api.Models.Milestone;
+
 
 // add restrictions to properties
 using System.ComponentModel.DataAnnotations;
@@ -12,18 +14,18 @@ public class Project
     // id
     public int Id { get; set; }
 
-    // short_name
+    // short_name used as a handle for the project
     [Required]
     [StringLength(100)]
     public string ShortName { get; set; } = string.Empty;
 
-    // Title, the default value is the ShortName
+    // Formal Title, the default value is the ShortName
     public string Title { get; set; } = string.Empty;
 
-    // focus
+    // Focus - What is the primary focus of this project?
     public string Focus { get; set; } = string.Empty;
 
-    // scope
+    // Scope - What are the boundaries of this project?
     public string Scope { get; set; } = string.Empty;
 
     // price_per_unit
@@ -48,17 +50,16 @@ public class Project
 
     // end_date
     public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
-    // TBD:
 
-    // Milestones to be implemented later on
-    // for now we are use a string for status
-    public string Status { get; set; } = string.Empty;
+    // Milestone - For tracking projects on Kanban board
+    public int MilestoneId { get; set; } // Foreign Key
+    public MilestoneModel.Milestone Milestone { get; set; } = null!;
 
     // Project Type to be implemented later on
     // for now we are use a string for type
     public string Type { get; set; } = string.Empty;
 
-    // Users associated with project
+    // Users assigned to the project
     // this will be a join table in the database
 
     // Skip Navigation for convenience

@@ -106,5 +106,18 @@ namespace Video_Project_Suite.Api.Controllers
             return NoContent(); // Return 204 No Content on successful deletion
         }
 
+
+
+        // update project milestone
+        [HttpPut("project/{projectId}/milestone/{newMilestoneId}")]
+        public async Task<IActionResult> UpdateProjectMilestone(int projectId, int newMilestoneId)
+        {
+            var success = await projectService.UpdateProjectMilestoneAsync(projectId, newMilestoneId);
+            if (success == false)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
     }
 }

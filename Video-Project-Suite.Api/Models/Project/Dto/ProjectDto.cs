@@ -43,11 +43,8 @@ public class ProjectDto
 
     // end_date
     public DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
-    // TBD:
 
-    // Milestones to be implemented later on
-    // for now we are use a string for status
-    public string Status { get; set; } = string.Empty;
+    public int MilestoneId { get; set; }
 
     // Project Type to be implemented later on
     // for now we are use a string for type

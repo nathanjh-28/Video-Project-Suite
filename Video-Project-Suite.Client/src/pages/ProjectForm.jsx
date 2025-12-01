@@ -13,7 +13,7 @@ import {
     Link
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projectApi } from '../services';
+import { projectApi, milestoneApi } from '../services';
 
 const ProjectForm = () => {
     const [project, setProject] = useState({
@@ -21,10 +21,11 @@ const ProjectForm = () => {
         title: '',
         type: 'web',
         focus: '',
-        status: 'Planning',
+        milestoneName: 'Planning',
+        milestoneId: 1,
         client: '',
         producer: '',
-        qtyPerUnit: 1,
+        qtyOfUnits: 1,
         pricePerUnit: 0,
         editor: '',
         expenseBudget: 0,
@@ -35,6 +36,7 @@ const ProjectForm = () => {
         endDate: ''
     });
     const [loading, setLoading] = useState(false);
+    const [milestones, setMilestones] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditing = Boolean(id);
@@ -80,12 +82,18 @@ const ProjectForm = () => {
         }
     };
 
-    const statusOptions = [
-        'Planning',
-        'In Progress',
-        'On Hold',
-        'Completed'
-    ];
+    const loadMilestones = async () => {
+        try {
+            const data = await milestoneApi.getAll();
+            setMilestones(data);
+        } catch (error) {
+            console.error('Failed to load milestones:', error);
+        }
+    }
+
+    useEffect(() => {
+        loadMilestones();
+    }, []);
 
     const typeOptions = [
         'Photo',
@@ -105,24 +113,41 @@ const ProjectForm = () => {
                 </Typography>
             </Breadcrumbs>
 
-            <Typography variant="h4" gutterBottom>
-                {isEditing ? 'Edit Project' : 'New Project'}
-            </Typography>
+            <form onSubmit={handleSubmit}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Typography variant="h4" gutterBottom>
+                        {project.title ? project.title : (isEditing ? 'Edit Project' : 'New Project')}
+                        <Typography >
+                            {project.shortName ? project.shortName : ''}
+                        </Typography>
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mb: 2 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => navigate('/projects')}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={loading}
+                        >
+                            {loading ? 'Saving...' : 'Save Project'}
+                        </Button>
+                    </Box>
+                </Box>
 
-            <Card>
-                <CardContent>
-                    <form onSubmit={handleSubmit}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Short Name"
-                                    value={project.shortName}
-                                    onChange={handleChange('shortName')}
-                                    required
-                                />
+                <Card sx={{ overflowY: 'scroll', maxHeight: '70vh' }}>
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} size={12}>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            {/*                                                   Title */}
+                            {/* <Grid item xs={12}>
+                                <Typography variant="h6">Title</Typography>
+                            </Grid> */}
+                            <Grid item xs={12} md={6} size={12}>
                                 <TextField
                                     fullWidth
                                     label="Title"
@@ -131,7 +156,17 @@ const ProjectForm = () => {
                                     required
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+
+                            <Grid item xs={12} md={6} size={4}>
+                                <TextField
+                                    fullWidth
+                                    label="Short Name"
+                                    value={project.shortName}
+                                    onChange={handleChange('shortName')}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     select
@@ -146,31 +181,53 @@ const ProjectForm = () => {
                                     ))}
                                 </TextField>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
+                                    select
+                                    label="Milestone"
+                                    value={project.milestoneId}
+                                    onChange={handleChange('milestoneId')}
+                                >
+                                    {/* for each key in milestones, create a menu item */}
+                                    {Object.values(milestones).map((milestone) => (
+                                        <MenuItem key={milestone.id} value={milestone.id}>
+                                            {milestone.name}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+
+                            <Grid item xs={12} size={6}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    label="Scope"
+                                    value={project.scope}
+                                    onChange={handleChange('scope')}
+                                    placeholder="Enter project scope..."
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6} size={6}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={3}
                                     label="Focus"
                                     value={project.focus}
                                     onChange={handleChange('focus')}
                                     placeholder="e.g., UI/UX, Backend, Frontend"
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    select
-                                    label="Status"
-                                    value={project.status}
-                                    onChange={handleChange('status')}
-                                >
-                                    {statusOptions.map((option) => (
-                                        <MenuItem key={option} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+
+                            {/*                                                   People */}
+
+                            <Grid item xs={12} size={12}>
+                                <Typography variant="h6">People</Typography>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     label="Client"
@@ -178,7 +235,7 @@ const ProjectForm = () => {
                                     onChange={handleChange('client')}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     label="Producer"
@@ -186,7 +243,7 @@ const ProjectForm = () => {
                                     onChange={handleChange('producer')}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     label="Editor"
@@ -194,27 +251,40 @@ const ProjectForm = () => {
                                     onChange={handleChange('editor')}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+
+                            {/*                                                   Budget */}
+                            <Grid item xs={12} size={12}>
+                                <Typography variant="h6">Budget</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     type="number"
                                     label="Quantity Per Unit"
-                                    value={project.qtyPerUnit}
-                                    onChange={handleChange('qtyPerUnit')}
+                                    value={Number(project.qtyOfUnits)}
+                                    onChange={handleChange('qtyOfUnits')}
                                     inputProps={{ min: 1 }}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     type="number"
                                     label="Price Per Unit"
-                                    value={project.pricePerUnit}
+                                    value={Number(project.pricePerUnit)}
                                     onChange={handleChange('pricePerUnit')}
                                     inputProps={{ min: 0, step: 0.01 }}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
+                                <Typography>
+                                    Total Project Price:
+                                </Typography>
+                                {`$${(project.qtyOfUnits * project.pricePerUnit).toFixed(2)}`}
+                            </Grid>
+
+
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     type="number"
@@ -224,7 +294,28 @@ const ProjectForm = () => {
                                     inputProps={{ min: 0 }}
                                 />
                             </Grid>
+                            <Grid item xs={12} size={4}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    label="Expense Summary"
+                                    value={project.expenseSummary}
+                                    onChange={handleChange('expenseSummary')}
+                                    placeholder="e.g., travel, food 5 days, software licenses"
+                                />
+                            </Grid>
                             <Grid item xs={12} md={6}>
+                                <Typography>
+                                    Total Estimated Profit:
+                                </Typography>
+                                {`$${((project.qtyOfUnits * project.pricePerUnit) - project.expenseBudget).toFixed(2)}`}
+                            </Grid>
+                            {/*                                                   Dates */}
+                            <Grid item xs={12} size={12}>
+                                <Typography variant="h6">Dates</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -236,7 +327,7 @@ const ProjectForm = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} md={6} size={4}>
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -248,60 +339,37 @@ const ProjectForm = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} size={4}>
+                                <Typography>
+                                    Total Project Duration:
+                                </Typography>
+                                {project.startDate && project.endDate ?
+                                    `${Math.ceil((new Date(project.endDate) - new Date(project.startDate)) / (1000 * 60 * 60 * 24))} days`
+                                    :
+                                    'N/A'
+                                }
+                            </Grid>
+                            {/*                                                   Comments */}
+                            <Grid item xs={12} size={12}>
+                                <Typography variant="h6">Comments</Typography>
+                            </Grid>
+
+                            <Grid item xs={12} size={12}>
                                 <TextField
                                     fullWidth
                                     multiline
                                     rows={3}
-                                    label="Scope"
-                                    value={project.scope}
-                                    onChange={handleChange('scope')}
-                                    placeholder="Enter project scope..."
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={2}
-                                    label="Expense Summary"
-                                    value={project.expenseSummary}
-                                    onChange={handleChange('expenseSummary')}
-                                    placeholder="e.g., travel, food 5 days, software licenses"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={2}
                                     label="Comments"
                                     value={project.comments}
                                     onChange={handleChange('comments')}
                                     placeholder="Enter any additional comments..."
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => navigate('/projects')}
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        variant="contained"
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Saving...' : 'Save Project'}
-                                    </Button>
-                                </Box>
-                            </Grid>
+
                         </Grid>
-                    </form>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            </form>
         </Box>
     );
 };
