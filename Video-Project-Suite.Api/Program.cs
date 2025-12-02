@@ -173,7 +173,8 @@ public class Program
             app.MapScalarApiReference();
 
         }
-        // Use Cors
+
+        // Use Cors - MUST come before UseHttpsRedirection
         app.UseCors("AllowReactApp");
 
         // Enable HTTPS redirection
